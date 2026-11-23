@@ -1,0 +1,1608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Erotic Pole Dancer Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;600&family=Fira+Sans:wght@400;500;600&family=Black+Ops+One&display=swap">
+<style>
+:root{
+  --bg:#f1f4f8; --card:#ffffff; --ink:#0f1b33; --muted:#526075; --line:#dde3ec; --soft:#eef2f7;
+  --primary:#1e40af; --on-primary:#fff; --accent:#b45309; --accent-soft:#fdf1e2;
+  --ok:#11734a; --ok-soft:#e2f4ea; --bad:#b91c1c; --bad-soft:#fde7e7; --input:#fff;
+  --display:#0f1b33; --on-display:#fff; --display-muted:#9fb0cc;
+  --sans:"Fira Sans","Segoe UI",system-ui,sans-serif; --mono:"Fira Code",Consolas,"Cascadia Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1120; --card:#131b2e; --ink:#e6ecf5; --muted:#94a3b8; --line:#26324a; --soft:#1b2540;
+    --primary:#6b9cff; --on-primary:#071226; --accent:#f0a547; --accent-soft:#33240f;
+    --ok:#4cc38a; --ok-soft:#10301f; --bad:#ff8577; --bad-soft:#3a1616; --input:#0e1526;
+    --display:#070c18; --on-display:#fff; --display-muted:#8193b3;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b1120; --card:#131b2e; --ink:#e6ecf5; --muted:#94a3b8; --line:#26324a; --soft:#1b2540;
+  --primary:#6b9cff; --on-primary:#071226; --accent:#f0a547; --accent-soft:#33240f;
+  --ok:#4cc38a; --ok-soft:#10301f; --bad:#ff8577; --bad-soft:#3a1616; --input:#0e1526;
+  --display:#070c18; --on-display:#fff; --display-muted:#8193b3;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+/* adjustable text size (Settings): scales the whole app while keeping it one screen tall */
+body{zoom:var(--z,1);height:calc(100vh / var(--z,1))}
+.dlg-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:12px 0;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--card)}
+.zoomctl{display:flex;align-items:center;gap:6px}
+.zoomctl .zl{font-size:13px;font-weight:600;margin-right:4px}
+.zoomctl .btn.icon{width:34px;font-weight:700}
+#zoomVal{min-width:44px;text-align:center;font:600 13px var(--mono)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans);display:flex;flex-direction:column;overflow:hidden}
+input,select,button{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+svg.i{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:14px;padding:0 16px;height:52px;background:var(--card);border-bottom:1px solid var(--line);flex:none}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;white-space:nowrap}
+.brand .logo{width:26px;height:26px;border-radius:6px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center}
+.bar .sp{flex:1}
+.field-inline{display:flex;align-items:center;gap:8px}
+.field-inline label{font-size:12px;color:var(--muted);font-weight:500;white-space:nowrap}
+
+/* buttons & inputs */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:7px;border:1px solid var(--line);background:var(--card);font-weight:500;transition:background .15s,border-color .15s;white-space:nowrap}
+.btn:hover{background:var(--soft);border-color:var(--muted)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--soft)}
+.btn.icon{width:34px;padding:0;justify-content:center}
+.btn.sm{height:30px;padding:0 10px;font-size:13px}
+.btn.icon.sm{width:30px}
+.btn[aria-pressed="true"]{background:var(--soft);border-color:var(--primary);color:var(--primary)}
+.inp{height:34px;background:var(--input);border:1px solid var(--line);border-radius:7px;padding:0 10px;width:100%;transition:border-color .15s}
+.inp:hover{border-color:var(--muted)}
+.inp:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent)}
+.inp.bad{border-color:var(--bad)}
+select.inp{padding-right:4px}
+
+/* layout */
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:250px minmax(340px,.9fr) minmax(500px,1.3fr);gap:12px;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.card-h{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex:none;min-height:50px}
+.card-h h2{margin:0;font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.card-h .sp{flex:1}
+.card-b{padding:12px;overflow:auto;min-height:0;flex:1}
+.stack{display:flex;flex-direction:column;gap:12px;min-height:0}
+.stack>.card{flex:1}
+
+/* calculator */
+.display{background:var(--display);color:var(--on-display);border-radius:9px;padding:12px 14px;margin-bottom:10px}
+.display input{width:100%;background:transparent;border:0;color:var(--display-muted);font:700 21px var(--mono);text-align:right;padding:0}
+.display input:focus{outline:none;color:var(--on-display)}
+.display{transition:box-shadow .15s}
+.display:focus-within{box-shadow:0 0 0 2px var(--primary)}
+.display input::placeholder{color:var(--display-muted);opacity:.7;font-weight:500;font-size:15px}
+.display .res{font:600 34px/1.15 var(--mono);text-align:right;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.display .err{color:#ffb4aa;font-size:12px;text-align:right;min-height:16px}
+.conv{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px}
+.conv div{background:var(--soft);border-radius:7px;padding:6px 8px;min-width:0}
+.conv span{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.conv b{display:block;font:600 15px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.calc-b{display:flex;flex-direction:column}
+.keypad{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,minmax(38px,1fr));gap:6px;flex:1 1 0;min-height:210px;max-height:440px}
+.keypad button{height:auto;border-radius:8px;border:1px solid var(--line);background:var(--card);font:600 17px var(--mono);transition:background .12s,transform .06s}
+.keypad button:hover{background:var(--soft)}
+.keypad button:active{transform:scale(.97)}
+.keypad .unit{color:var(--accent);background:var(--accent-soft);border-color:transparent;font-size:15px}
+.keypad .op{color:var(--primary);font-size:20px}
+.keypad .fn{color:var(--muted);font-size:15px}
+.keypad .eq{background:var(--primary);color:var(--on-primary);border-color:var(--primary);font-family:var(--sans);font-size:22px}
+.help{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.5}
+.keys{flex:none;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:center;margin:10px 0 0;font-size:12px;color:var(--muted)}
+.keys dt{text-align:right;white-space:nowrap}
+.keys dd{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.keys kbd{color:var(--ink)}
+kbd{font:500 11px var(--mono);background:var(--soft);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+
+/* tables */
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:0 6px 6px;position:sticky;top:0;background:var(--card);z-index:1}
+td{padding:4px 6px;border-top:1px solid var(--line);vertical-align:middle}
+.empty{padding:22px 8px;text-align:center;color:var(--muted)}
+
+/* history */
+.counter{white-space:nowrap;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.counter.done{background:var(--ok-soft);color:var(--ok)}
+#histTable tr.checked .dim{opacity:.5}
+#histTable .val{font:600 14px var(--mono);white-space:nowrap;background:none;border:0;padding:4px 2px;border-radius:4px}
+#histTable .val:hover{color:var(--primary);text-decoration:underline}
+#histTable .expr{font:11px var(--mono);color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:2px}
+.chk{width:18px;height:18px;accent-color:var(--ok);cursor:pointer;display:block}
+#histTable{table-layout:fixed}
+#histTable .inp{height:30px;font-size:13px}
+#histTable .expr{max-width:40%;flex:none}
+#histTable tr.sub td{border-top:0;padding-top:0;padding-bottom:8px}
+#histTable .fcell .expr{display:block;max-width:none;white-space:normal;overflow-wrap:break-word;font:600 12.5px var(--mono);color:var(--ink);padding:0;line-height:1.35}
+#histTable .fcell .expr i{font-style:normal;color:var(--muted)}
+#histTable .fcell .expr b{color:var(--primary)}
+.subrow{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap}
+.subrow .inp{flex:1;min-width:0;height:28px}
+#histTable td{padding:4px 4px}
+.exv{flex:none;max-height:38%;display:flex;flex-direction:column;border-top:1px solid var(--line);min-height:0}
+.exv-h{display:flex;align-items:center;gap:8px;padding:8px 12px 4px}
+.exv-h h3{margin:0;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.exv-n{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--bad-soft);color:var(--bad)}
+.exv-n.ok{background:var(--ok-soft);color:var(--ok)}
+.exv-b{overflow:auto;padding:0 12px 10px;font-size:13px}
+.exv-g{margin-top:6px}
+.exv-g h4{margin:0 0 2px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--bad)}
+.exv-g ul{margin:0;padding:0;list-style:none}
+.exv-g li{padding:2px 0 2px 10px;border-left:2px solid var(--bad);margin:2px 0}
+.exv-g li span{color:var(--muted)}
+.exv-empty{color:var(--muted);padding:4px 0}
+#histTable td.acts{white-space:nowrap;text-align:right}
+#histTable td.acts .cp{width:28px;height:28px;opacity:.8;vertical-align:middle}
+#histTable td.acts .cp svg.i{width:15px;height:15px}
+#histTable td.acts .btn{vertical-align:middle}
+#histTable .vc{display:inline-flex;align-items:center;gap:1px;max-width:100%}
+#histTable .cp{flex:none;width:22px;height:22px;display:inline-grid;place-items:center;border:0;border-radius:5px;background:none;color:var(--muted);opacity:.55;cursor:pointer;padding:0}
+#histTable .cp svg.i{width:13px;height:13px}
+#histTable tr:hover .cp,#histTable .cp:focus-visible{opacity:1}
+#histTable .cp:hover{background:var(--soft);color:var(--primary)}
+#histTable .cp.done{opacity:1;color:var(--ok);background:var(--ok-soft)}
+
+/* attachments */
+#attTable .inp{height:32px}
+#attTable td.cv{font:13px var(--mono);white-space:nowrap}
+#attTable{table-layout:fixed}
+#attTable td.cv{overflow:hidden}
+#attTable .vmsg{max-width:100%}
+.delta{font-size:11px;color:var(--muted)}
+.ferr{color:var(--bad);font:12px var(--sans)}
+
+/* spacing check */
+.sum{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.pass{background:var(--ok-soft);color:var(--ok)}
+.fail{background:var(--bad-soft);color:var(--bad)}
+.na{background:var(--soft);color:var(--muted)}
+.att.bad{background:var(--bad-soft);box-shadow:inset 0 0 0 1px var(--bad)}
+.att.bad .nm{color:var(--bad)}
+.att .nm svg.i{width:14px;height:14px;vertical-align:-2px}
+.gap.badgap .ln{background:var(--bad)}
+#attTable tr.viol td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
+.inp.vio{border-color:var(--bad);background:var(--bad-soft)}
+.vmsg{color:var(--bad);font:600 11px/1.35 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;margin-top:2px}
+.btn.danger{color:var(--bad)}
+.btn.danger:hover{background:var(--bad-soft);border-color:var(--bad)}
+.btn:disabled{opacity:.4;cursor:default;pointer-events:none}
+/* loading screen */
+#splash{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  background:radial-gradient(ellipse at 50% 35%,#1b2a4a 0%,#0b1120 70%);color:#e6ecf5;transition:opacity .45s ease,visibility .45s;cursor:pointer}
+#splash.done{opacity:0;visibility:hidden}
+.sp-art{width:min(260px,60vw);height:auto;overflow:visible}
+.sp-wire{fill:none;stroke:#94a3b8;stroke-width:1.6}.sp-wire.thin{stroke-width:1;stroke:#64748b}
+.sp-ins{fill:#cbd5e1}
+.sp-limb{fill:none;stroke:#1e3a8a;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.sp-limb.dark{stroke:#172554}
+.sp-body{stroke:#f97316;stroke-width:11;stroke-linecap:round}
+.sp-belt{fill:none;stroke:#3f2a14;stroke-width:2.5;stroke-linecap:round}
+.sp-gaff{stroke:#9ca3af;stroke-width:2;stroke-linecap:round}
+.sp-climb{animation:spClimb 1.8s cubic-bezier(.45,.05,.55,.95) forwards}
+.sp-fall{transform-box:fill-box;transform-origin:50% 50%}
+#splash.v-bird .sp-fall,#splash.v-nut .sp-fall{animation:spFall 1.1s cubic-bezier(.5,0,.9,.5) 2.05s forwards}
+#splash.v-zap .sp-fall{animation:spShake .07s linear 1.9s 8,spFall 1.1s cubic-bezier(.5,0,.9,.5) 2.5s forwards}
+#splash.v-climb .sp-armA,#splash.v-climb .sp-armB,#splash.v-climb .sp-legA,#splash.v-climb .sp-legB{animation-iteration-count:4}
+#splash:not(.v-bird) .sp-only-bird,#splash:not(.v-nut) .sp-only-nut,#splash:not(.v-zap) .sp-only-zap,#splash:not(.v-climb) .sp-only-climb{display:none}
+#splash.v-climb .sp-bonk,#splash.v-zap .sp-bonk{display:none}
+.sp-sq{animation:spSq .45s ease-out 1.1s both}
+.sp-tail{transform-box:fill-box;transform-origin:0% 100%;animation:spTail .25s ease-in-out 1.6s 6 alternate}
+.sp-nut{animation:spNut 1s cubic-bezier(.55,0,1,.6) 1.62s both}
+.sp-bolt{fill:none;stroke:#fde047;stroke-width:3;stroke-linejoin:round;filter:drop-shadow(0 0 4px #facc15);opacity:0;animation:spBolt .6s steps(1) 1.9s}
+.sp-bolt.b2{animation-delay:1.95s}
+.sp-spark{fill:#fff7c2;filter:drop-shadow(0 0 6px #fde047);opacity:0;animation:spBolt .6s steps(1) 1.92s}
+.sp-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#splash.v-zap .sp-flash{animation:spFlash .5s steps(1) 1.9s}
+.sp-ok{transform-box:fill-box;transform-origin:0% 50%;opacity:0;animation:spOk .5s cubic-bezier(.3,1.6,.6,1) 1.85s forwards}
+@keyframes spShake{0%{transform:translate(-2px,0);filter:brightness(2.6)}50%{transform:translate(2px,-1px);filter:brightness(.6)}100%{transform:translate(-1px,1px);filter:brightness(2.6)}}
+@keyframes spSq{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes spTail{from{transform:rotate(0)}to{transform:rotate(-14deg)}}
+@keyframes spNut{0%{transform:translate(0,0)}38%{transform:translate(-30px,40px)}55%{transform:translate(-12px,24px) rotate(90deg)}100%{transform:translate(14px,150px) rotate(300deg);opacity:0}}
+@keyframes spBolt{0%{opacity:1}15%{opacity:0}30%{opacity:1}50%{opacity:.2}65%{opacity:1}85%{opacity:0}100%{opacity:0}}
+@keyframes spFlash{0%{opacity:.55}20%{opacity:0}40%{opacity:.4}60%{opacity:0}100%{opacity:0}}
+@keyframes spOk{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+.sp-bird{animation:spBird 1.7s linear 1.3s both}
+.sp-wing{transform-box:fill-box;transform-origin:30% 100%;animation:spFlap .14s ease-in-out infinite alternate}
+.sp-bonk{transform-box:fill-box;transform-origin:20% 50%;opacity:0;animation:spBonk .8s ease-out 2.02s forwards}
+@keyframes spFall{0%{transform:none}12%{transform:translate(-6px,-8px) rotate(-30deg)}100%{transform:translate(-80px,250px) rotate(-260deg);opacity:0}}
+@keyframes spBird{0%{transform:translate(0,0)}42%{transform:translate(-141px,0)}55%{transform:translate(-158px,-18px) rotate(14deg)}100%{transform:translate(-330px,-110px) rotate(-8deg)}}
+@keyframes spFlap{from{transform:scaleY(1)}to{transform:scaleY(-.7)}}
+@keyframes spBonk{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1.15)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.sp-armA,.sp-legB{animation:spSwingA .5s ease-in-out infinite alternate;transform-origin:0 0}
+.sp-armB,.sp-legA{animation:spSwingB .5s ease-in-out infinite alternate;transform-origin:0 0}
+@keyframes spClimb{from{transform:translateY(0)}to{transform:translateY(-128px)}}
+@keyframes spSwingA{from{transform:rotate(-14deg)}to{transform:rotate(12deg)}}
+@keyframes spSwingB{from{transform:rotate(12deg)}to{transform:rotate(-14deg)}}
+.sp-title{font:600 20px var(--sans);letter-spacing:.02em}
+.sp-bar{width:180px;height:4px;border-radius:2px;background:#26324a;overflow:hidden}
+.sp-bar span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#6b9cff,#f0a547);transform-origin:left;animation:spBar 3.1s ease-out forwards}
+@keyframes spBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sp-sig{font:400 12px/1 "Black Ops One",Impact,"Arial Black",sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8a94a6}
+@media (prefers-reduced-motion: reduce){.sp-flash{display:none}.sp-climb,.sp-fall,.sp-sq,.sp-tail,.sp-nut,.sp-bolt,.sp-spark,.sp-ok,#splash .sp-fall,.sp-bird,.sp-wing,.sp-bonk,.sp-armA,.sp-armB,.sp-legA,.sp-legB,.sp-bar span{animation-duration:.01s;animation-delay:0s}}
+.sig{flex:none;margin:auto 0;padding:6px 0;text-align:center;font:400 17px/1.1 "Black Ops One",Impact,"Arial Black",sans-serif;letter-spacing:.12em;text-transform:uppercase;
+  background:linear-gradient(180deg,#e5e9f0 0%,#8a94a6 55%,#4b5563 100%);-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none}
+:root[data-theme="light"] .sig{background-image:linear-gradient(180deg,#4b5563 0%,#1f2937 60%,#0b0f17 100%)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .sig{background-image:linear-gradient(180deg,#4b5563 0%,#1f2937 60%,#0b0f17 100%)}}
+.btn.undo:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn.undo:not(:disabled):hover{background:var(--primary);color:var(--on-primary)}
+#toastUndo{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--display);color:var(--on-display);padding:10px 12px 10px 16px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:50;font-weight:500}
+.toast .btn{height:30px;background:transparent;color:#ffd27a;border-color:#ffd27a55}
+.toast .btn:hover{background:#ffffff14}
+.att{display:grid;grid-template-columns:4px 1fr auto;gap:10px;align-items:center;background:var(--soft);border-radius:7px;padding:7px 10px 7px 0;overflow:hidden}
+.att .sw{align-self:stretch;border-radius:0 3px 3px 0}
+.att .nm{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.att .nm small{font-weight:400;color:var(--muted);margin-left:6px}
+.att .h{font:600 14px var(--mono);text-align:right;white-space:nowrap}
+.att .h small{font-weight:400;color:var(--muted);margin-left:6px}
+.gap{display:flex;align-items:center;gap:10px;padding:3px 0 3px 14px;font-size:12px}
+.gap .ln{width:2px;height:18px;background:var(--line);flex:none}
+.gap .num{color:var(--ink)}
+.pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.pill svg.i{width:12px;height:12px;stroke-width:3}
+.c-Power{background:#e08a1e}.c-Primary{background:#8b5cf6}.c-Neutral{background:#cbd5e1}
+.tg-Primary::before{background:#8b5cf6}.tg-Neutral::before{background:#cbd5e1;box-shadow:0 0 0 1px #64748b}
+.chk2{display:grid;grid-template-columns:minmax(0,1fr) minmax(150px,36%);column-gap:10px;row-gap:0;align-items:center}
+.chk2 .colh{font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:0 0 6px}
+.fix{font-size:12px;line-height:1.35;padding:6px 8px;border-radius:7px;min-width:0}
+.fix.ok{color:var(--muted)}
+.fix.low{background:var(--accent-soft);color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.fix.low b{color:var(--accent)}
+.fix small{display:block;color:var(--muted)}
+.fix .warn{color:var(--bad);font-weight:600}
+.limit{display:flex;align-items:center;gap:8px;font:600 11px var(--sans);color:var(--accent);padding:4px 0}
+.limit::before,.limit::after{content:"";flex:1;border-top:2px dashed var(--accent)}
+.limit.top{color:var(--muted)}.limit.top::before,.limit.top::after{border-top:1px solid var(--line)}
+#ptWrap{display:flex;align-items:center;gap:6px;font-size:12px}
+.ptrow{display:flex;align-items:center;gap:10px;padding:2px 0 8px;margin-bottom:4px;border-bottom:1px dashed var(--line);font-size:13px}
+.ptrow .sw{width:4px;height:24px;border-radius:2px;background:var(--muted)}
+.ptrow label{font-weight:600;white-space:nowrap}
+.ptrow .inp{width:110px;height:32px}
+.ptconv{font:13px var(--mono);white-space:nowrap}
+.ptnote{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ptnote.bad{color:var(--bad);font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+#h-chk,#ptWrap label,#summary .sum{white-space:nowrap}
+.seg button{white-space:nowrap;height:28px;padding:0 8px;font:600 12px var(--sans);background:var(--soft);color:var(--muted);border:0}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-checked="true"]{background:var(--primary);color:var(--on-primary)}
+.tg{display:inline-flex;align-items:center;gap:6px;height:32px;width:100%;padding:0 10px;border-radius:7px;border:1px solid var(--line);background:var(--soft);font-weight:600;font-size:13px;transition:background .15s,border-color .15s}
+.tg:hover{border-color:var(--muted)}
+.tg::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.tg-Power::before{background:#e08a1e}.tg-Comm::before{background:#1f8fd6}
+.c-Comm{background:#1f8fd6}
+
+/* rules dialog */
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:0;width:min(520px,92vw);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(8,14,28,.5)}
+dialog .card-h{border-radius:12px 12px 0 0}
+.note{background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:8px 10px;font-size:12px;margin-bottom:10px}
+#rulesTable .inp{width:90px;height:30px}
+
+/* smaller screens: allow page scroll */
+
+/* coop rail */
+.app{flex:1;min-height:0;display:flex}
+.app>.grid{flex:1;min-width:0}
+.rail{width:184px;flex:none;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;padding:12px 8px;overflow:auto}
+.rail h3{margin:0 8px 6px;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.rail .sep{height:1px;background:var(--line);margin:6px 6px}
+.tab{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;background:transparent;border:0;border-left:3px solid transparent;border-radius:6px;padding:7px 10px;transition:background .15s}
+.tab:hover{background:var(--soft)}
+.tab b{font-size:15px;font-weight:600;line-height:1.25}
+.tab small{font:12px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tab[aria-selected="true"]{background:var(--primary);border-left-color:var(--accent);box-shadow:0 2px 8px rgba(30,64,175,.35)}
+.tab[aria-selected="true"] b{color:var(--on-primary);font-weight:700}
+.tab[aria-selected="true"] small{color:var(--on-primary);opacity:.85}
+#activeTag{font-size:14px;font-weight:600;color:var(--primary);background:var(--soft);border:1px solid var(--primary);padding:3px 10px;border-radius:999px}
+.tab .star{font-size:10px;font-weight:600;color:var(--accent);margin-left:4px}
+.rail .foot{margin-top:auto;padding-top:10px}
+
+/* required selector */
+.reqrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.reqrow label{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+.reqrow select{flex:1;min-width:0;height:32px}
+.reqstat{min-height:22px;margin:-4px 0 10px}
+.gap select{height:26px;font-size:12px;padding:0 4px;border-radius:6px;max-width:190px}
+.reqpill{font:600 11px var(--mono);padding:2px 6px;border-radius:999px;white-space:nowrap}
+
+/* settings */
+dialog.wide{width:min(720px,94vw)}
+.dlg-b{padding:12px 14px 14px;max-height:78vh;overflow:auto}
+.dlg-b h4{margin:16px 0 8px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.dlg-b h4:first-child{margin-top:0}
+#presetTable .inp{height:30px;font-size:13px}
+.hint2{font-size:12px;color:var(--muted);margin:6px 0 0}
+
+/* reference chart view */
+.chartview{flex:1;min-width:0;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.chartview .card{flex:none;max-width:900px;width:100%}
+.ctable th,.ctable td{padding:8px 12px}
+.ctable td{font:500 15px var(--mono)}
+.ctable td:first-child{font-weight:600;font-size:16px}
+.ctable .in{color:var(--accent);font-weight:600}
+.ctable tbody tr:hover{background:var(--soft)}
+.ctable button.use{background:none;border:0;padding:2px 4px;border-radius:4px;font:inherit}
+.ctable button.use:hover{color:var(--primary);text-decoration:underline}
+.ctable tr.hl{background:var(--accent-soft)}
+.custom{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.cin{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.cin label{font-size:13px;font-weight:600}
+.cin .inp{width:150px;height:38px;font-size:16px}
+.ctab{width:auto;min-width:420px}
+.ctab th,.ctab td{padding:6px 14px;text-align:left;border-bottom:1px solid var(--line)}
+.ctab tbody th{font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);position:static}
+.ctab td{font:600 15px var(--mono);white-space:nowrap}
+.ctab td:last-child{color:var(--accent)}
+.ctab tr.hi td{color:var(--ink)}.ctab tr.hi td:last-child{color:var(--accent)}
+.tab.ref[aria-pressed="true"]{background:var(--soft);border-left-color:var(--accent)}
+.tab.ref[aria-pressed="true"] b{color:var(--accent)}
+@media (min-height:900px){.display .res{font-size:42px}.keypad button{font-size:20px}.keypad{max-height:600px}}
+@media (min-width:1700px){.grid{grid-template-columns:340px minmax(420px,1fr) minmax(520px,1.3fr)}}
+@media (max-width:1180px){
+  body{overflow:auto;height:auto}
+  .grid{grid-template-columns:1fr 1fr}
+  .grid>.stack:last-child{grid-column:1/-1}
+}
+@media (max-width:760px){
+  .app{flex-direction:column}
+  .rail{width:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .rail h3,.rail .sep,.rail .foot{display:none}
+  .tab{width:auto;border-left:0;border-bottom:3px solid transparent}
+  .tab[aria-selected="true"]{border-bottom-color:var(--primary)}
+  .grid{grid-template-columns:1fr;padding:8px}
+  .bar{height:auto;flex-wrap:wrap;padding:8px 12px}
+  .bar .tag{display:none}
+}
+/* same layouts when larger text makes the usable width small (set from JS: width / text size) */
+  html.w-md body{overflow:auto;height:auto}
+  html.w-md .grid{grid-template-columns:1fr 1fr}
+  html.w-md .grid>.stack:last-child{grid-column:1/-1}
+  html.w-sm .app{flex-direction:column}
+  html.w-sm .rail{width:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  html.w-sm .rail h3,html.w-sm .rail .sep,html.w-sm .rail .foot{display:none}
+  html.w-sm .tab{width:auto;border-left:0;border-bottom:3px solid transparent}
+  html.w-sm .tab[aria-selected="true"]{border-bottom-color:var(--primary)}
+  html.w-sm .grid{grid-template-columns:1fr;padding:8px}
+  html.w-sm .bar{height:auto;flex-wrap:wrap;padding:8px 12px}
+  html.w-sm .bar .tag{display:none}
+</style>
+</head>
+<body>
+<!-- loading screen: a lineman climbing a pole -->
+<div id="splash" role="status" aria-label="Loading Erotic Pole Dancer Tool">
+  <svg class="sp-art" viewBox="0 0 220 300" aria-hidden="true">
+    <defs>
+      <linearGradient id="spWood" x1="0" x2="1"><stop offset="0" stop-color="#5b3a22"/><stop offset=".5" stop-color="#8a5a35"/><stop offset="1" stop-color="#4a2e1a"/></linearGradient>
+    </defs>
+    <!-- wires -->
+    <path d="M0 52 Q55 66 110 50 T220 52" class="sp-wire"/>
+    <path d="M0 92 Q55 104 110 90 T220 92" class="sp-wire thin"/>
+    <!-- pole, crossarm, insulators -->
+    <rect x="101" y="18" width="18" height="290" rx="3" fill="url(#spWood)"/>
+    <rect x="52" y="44" width="116" height="9" rx="2" fill="#6b4428"/>
+    <rect x="58" y="34" width="8" height="12" rx="2" class="sp-ins"/><rect x="154" y="34" width="8" height="12" rx="2" class="sp-ins"/>
+    <rect x="106" y="10" width="8" height="10" rx="2" class="sp-ins"/>
+    <rect x="96" y="88" width="28" height="6" rx="2" fill="#374151"/>
+    <!-- the climber (moves up the pole) -->
+    <g class="sp-climb"><g class="sp-fall"><g transform="translate(84 262) scale(1.25)">
+      <!-- legs, hinged at the hip -->
+      <g class="sp-legB"><path d="M0 0 L10 14 L20 22" class="sp-limb dark"/><path d="M20 22 l3 4" class="sp-gaff"/></g>
+      <g class="sp-legA"><path d="M0 0 L12 12 L20 24" class="sp-limb"/><path d="M20 24 l3 4" class="sp-gaff"/></g>
+      <!-- torso and safety belt around the pole -->
+      <path d="M0 0 L4 -30" class="sp-body"/>
+      <path d="M1 -6 Q20 -16 36 -10" class="sp-belt"/>
+      <!-- arms, hinged at the shoulder -->
+      <g transform="translate(4 -27)">
+        <g class="sp-armB"><path d="M0 0 L9 -4 L16 -12" class="sp-limb dark"/></g>
+        <g class="sp-armA"><path d="M0 0 L10 2 L16 -6" class="sp-limb"/></g>
+      </g>
+      <!-- head, hard hat -->
+      <circle cx="6" cy="-38" r="6" fill="#e0b48a"/>
+      <path d="M-1 -40 a7.5 7.5 0 0 1 15 0 z" fill="#facc15"/><rect x="-3" y="-41" width="19" height="2.5" rx="1" fill="#eab308"/>
+    </g></g></g>
+    <!-- the bird -->
+    <g class="sp-only-bird">
+    <g transform="translate(268 82)"><g class="sp-bird"><g transform="scale(1.8)">
+      <ellipse cx="0" cy="0" rx="11" ry="6.5" fill="#1f2937"/>
+      <circle cx="-9" cy="-4" r="4.5" fill="#1f2937"/>
+      <path d="M-13 -4 l-6 1.5 l6 1.5 z" fill="#f59e0b"/>
+      <circle cx="-10" cy="-5" r="1.2" fill="#fff"/>
+      <path d="M10 -1 l9 -4 l-2 6 z" fill="#111827"/>
+      <path class="sp-wing" d="M-2 -3 Q4 -18 12 -15 Q8 -6 4 -2 z" fill="#374151"/>
+    </g></g></g>
+    </g>
+    <!-- the squirrel on the crossarm, with its acorn -->
+    <g class="sp-only-nut"><g transform="translate(142 44)"><g class="sp-sq">
+      <g transform="scale(1.35)">
+        <path class="sp-tail" d="M6 -4 q16 -4 12 -20 q-3 -9 -11 -6 q7 7 0 15 z" fill="#a0522d"/>
+        <ellipse cx="1" cy="-5" rx="7" ry="5.5" fill="#b5651d"/>
+        <circle cx="-6" cy="-11" r="4.6" fill="#b5651d"/>
+        <path d="M-7 -16 l1 -4 l2.5 3 z" fill="#8b4513"/>
+        <circle cx="-8.5" cy="-12" r="1.1" fill="#111"/>
+        <path d="M-4 -3 l-3 3 M2 -1 l-1 3" stroke="#8b4513" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(-14 -10)"><g class="sp-nut">
+        <ellipse cx="0" cy="1" rx="4.2" ry="5" fill="#8b5a2b"/>
+        <path d="M-4.6 -1 a4.6 3.6 0 0 1 9.2 0 z" fill="#5c3a1a"/><path d="M0 -4 v-2.5" stroke="#5c3a1a" stroke-width="1.4"/>
+      </g></g>
+    </g></g></g>
+    <!-- electrocution: arcs from the line to his hand and hard hat -->
+    <g class="sp-only-zap">
+      <path class="sp-bolt" d="M70 60 l12 10 l-6 3 l14 12 l-5 2 l12 6"/>
+      <path class="sp-bolt b2" d="M150 58 l-14 8 l5 4 l-16 8 l4 3 l-10 4"/>
+      <circle class="sp-spark" cx="106" cy="88" r="5"/><circle class="sp-spark b2" cx="98" cy="78" r="4"/>
+    </g>
+    <!-- clean climb: all clear -->
+    <g class="sp-only-climb"><g transform="translate(150 70)"><g class="sp-ok">
+      <rect x="-4" y="-14" width="74" height="22" rx="11" fill="#11734a"/>
+      <path d="M5 -3 l4 4 l8 -8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="22" y="1.5" font-family="'Fira Sans','Segoe UI',sans-serif" font-weight="700" font-size="10.5" fill="#fff">All clear!</text>
+    </g></g></g>
+    <!-- bonk (bird or acorn) -->
+    <g transform="translate(100 72)"><g class="sp-bonk">
+      <path d="M0 -14 L4 -5 L14 -6 L7 1 L11 11 L1 5 L-8 12 L-5 2 L-14 -3 L-4 -5 z" fill="#facc15" stroke="#f97316" stroke-width="1.5"/>
+      <text x="16" y="-12" font-family="Impact,'Arial Black',sans-serif" font-size="13" fill="#facc15" stroke="#0b1120" stroke-width=".6">BONK!</text>
+    </g></g>
+  </svg>
+  <div class="sp-flash"></div>
+  <div class="sp-title">Erotic Pole Dancer Tool</div>
+  <div class="sp-bar"><span></span></div>
+  <div class="sp-sig">Made by Slay</div>
+</div>
+<script>
+// random ending each launch, never the same one twice in a row
+(() => { const all = ['climb', 'bird', 'zap', 'nut']; let last = null;
+  try { last = localStorage.getItem('pct.lastSplash'); } catch (e) {}
+  const pool = all.filter(v => v !== last), v = pool[Math.floor(Math.random() * pool.length)];
+  try { localStorage.setItem('pct.lastSplash', v); } catch (e) {}
+  window.SPLASH = v; document.getElementById('splash').classList.add('v-' + v); })();
+</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></symbol>
+  <symbol id="i-pole" viewBox="0 0 24 24"><path d="M12 2v20M5 6h14M7 10h10M9 22h6"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></symbol>
+  <symbol id="i-new" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+</svg>
+
+<header class="bar">
+  <div class="brand"><span class="logo"><svg class="i"><use href="#i-pole"/></svg></span>Erotic Pole Dancer Tool</div>
+  <span class="tag" id="activeTag"></span>
+  <span class="sp"></span>
+  <button class="btn undo" id="undoBtn" title="Undo last change, including deletions (Ctrl+Z)" disabled><svg class="i"><use href="#i-undo"/></svg>Undo</button>
+  <button class="btn icon" id="redoBtn" aria-label="Redo" title="Redo (Ctrl+R)" disabled><svg class="i"><use href="#i-redo"/></svg></button>
+  <button class="btn danger" id="resetAll" title="Clear pole, attachments, history and calculator"><svg class="i"><use href="#i-trash"/></svg>Reset all</button>
+  <button class="btn" id="openSettings"><svg class="i"><use href="#i-gear"/></svg>Settings</button>
+  <button class="btn icon ghost" id="themeBtn" aria-label="Toggle light or dark theme"><svg class="i"><use href="#i-moon"/></svg></button>
+</header>
+
+<div class="app">
+<nav class="rail" aria-label="Clearance presets">
+  <h3 id="railLbl">Presets</h3>
+  <div role="tablist" aria-orientation="vertical" aria-labelledby="railLbl" id="tabs" style="display:contents"></div>
+  <div class="sep" role="presentation"></div>
+  <h3>Reference</h3>
+  <button class="tab ref" id="chartTab" aria-pressed="false"><b>Pole top conversion</b><small>depth · above ground</small></button>
+  <div class="foot"><button class="btn sm ghost" id="railEdit" style="width:100%;justify-content:flex-start"><svg class="i"><use href="#i-gear"/></svg>Edit presets</button></div>
+</nav>
+
+<main class="grid">
+  <!-- CALCULATOR -->
+  <section class="card" aria-labelledby="h-calc">
+    <div class="card-h"><h2 id="h-calc">Calculator</h2></div>
+    <div class="card-b calc-b">
+      <div class="display">
+        <label class="sr" for="calcIn">Measurement or expression</label>
+        <input id="calcIn" autocomplete="off" spellcheck="false" placeholder="25'5 · 260 · 25'5-21'5" autofocus>
+        <div class="res" id="calcOut" aria-live="polite">0' 0"</div>
+        <div class="err" id="calcErr"></div>
+      </div>
+      <div class="conv">
+        <div><span>Ft-in</span><b id="cFI">—</b></div>
+        <div><span>Inches</span><b id="cIN">—</b></div>
+      </div>
+      <div class="reqrow">
+        <label for="reqSel">Required</label>
+        <select class="inp" id="reqSel"></select>
+      </div>
+      <div class="reqstat" id="reqStat" aria-live="polite"></div>
+      <div class="keypad" id="keypad">
+        <button data-k="clear" class="fn" aria-label="Clear">C</button>
+        <button data-k="'" class="unit" aria-label="Feet mark">ft '</button>
+        <button data-k='"' class="unit" aria-label="Inches mark">in "</button>
+        <button data-k=" ÷ " class="op" aria-label="Divide">÷</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button data-k=" × " class="op" aria-label="Multiply">×</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k=" - " class="op" aria-label="Minus">−</button>
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k=" + " class="op" aria-label="Plus">+</button>
+        <button data-k="back" class="fn" aria-label="Backspace">⌫</button><button data-k="0">0</button><button data-k=".">.</button>
+        <button data-k="enter" class="eq" aria-label="Save to history">=</button>
+      </div>
+      <dl class="keys" aria-label="How to type">
+        <dt><kbd>25</kbd></dt><dd>feet (1–2 digits)</dd>
+        <dt><kbd>260</kbd></dt><dd>inches (3+ digits)</dd>
+        <dt><kbd>25 5</kbd></dt><dd>space = feet → 25' 5"</dd>
+        <dt><kbd>25'5-21'5</kbd></dt><dd>+ − × ÷, no spaces needed</dd>
+        <dt><kbd>Enter</kbd></dt><dd>save · <kbd>Esc</kbd> clear</dd>
+        <dt><kbd>Ctrl+Z</kbd></dt><dd>undo · <kbd>Ctrl+R</kbd> redo</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="card" aria-labelledby="h-hist">
+    <div class="card-h">
+      <h2 id="h-hist">History</h2>
+      <span class="counter" id="histCount" aria-live="polite"></span>
+      <span class="sp"></span>
+      <button class="btn icon sm ghost" id="histHide" aria-pressed="false" aria-label="Hide checked entries" title="Hide checked entries"><svg class="i"><use href="#i-eye"/></svg></button>
+      <button class="btn icon sm ghost" id="histCopy" aria-label="Copy history for Excel" title="Copy for Excel"><svg class="i"><use href="#i-copy"/></svg></button>
+      <button class="btn icon sm ghost" id="histClear" aria-label="Clear history" title="Clear history"><svg class="i"><use href="#i-trash"/></svg></button>
+    </div>
+    <div class="card-b" style="padding-top:8px">
+      <table id="histTable">
+        <colgroup><col style="width:26px"><col style="width:86px"><col><col style="width:50px"><col style="width:46px"><col style="width:58px"></colgroup>
+        <thead><tr><th><span class="sr">Checked</span>✓</th><th>Ft-in</th><th>Formula</th><th>Inches</th><th title="Required clearance">Req.</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="exv" aria-labelledby="h-exv">
+      <div class="exv-h"><h3 id="h-exv">Existing violations</h3><span class="exv-n" id="exvCount"></span></div>
+      <div class="exv-b" id="exvList" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- POLE -->
+  <div class="stack">
+    <section class="card" aria-labelledby="h-att" style="flex:1">
+      <div class="card-h">
+        <h2 id="h-att">Attachments</h2>
+        <span class="sp"></span>
+        <button class="btn sm ghost" id="exportCsv" title="Export CSV"><svg class="i"><use href="#i-file"/></svg>CSV</button>
+        <button class="btn sm ghost" id="copyTable" title="Copy for Excel"><svg class="i"><use href="#i-copy"/></svg>Copy</button>
+        <button class="btn sm ghost" id="clearPole" title="Start a new pole: clears attachments, pole top, history and calculator (Ctrl+Z undoes)"><svg class="i"><use href="#i-new"/></svg>New pole</button>
+        <button class="btn sm primary" id="addRow"><svg class="i"><use href="#i-plus"/></svg>Add</button>
+      </div>
+      <div class="card-b" style="padding-top:8px">
+        <div class="ptrow"><span class="sw c-Top"></span><label for="poleTop">Pole top</label>
+          <input class="inp num" id="poleTop" placeholder="optional" aria-label="Pole top height (optional)">
+          <span id="ptWrap"><span class="seg" id="constr" role="radiogroup" aria-label="Construction">
+            <button type="button" data-c="tangent" role="radio">Tangent</button><button type="button" data-c="vertical" role="radio">Vertical</button></span></span>
+          <span class="ptconv" id="ptConv"></span><span class="ptnote" id="ptNote"></span></div>
+        <table id="attTable">
+          <thead><tr><th style="width:22%">Name</th><th style="width:15%">Type</th><th style="width:14%">Existing</th><th style="width:14%">Proposed</th><th>Result</th><th style="width:34px"></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="h-chk" style="flex:1.15">
+      <div class="card-h"><h2 id="h-chk">Spacing check</h2>
+        <span class="sp"></span><span id="summary" aria-live="polite"></span></div>
+      <div class="card-b" id="diagram"></div>
+    </section>
+  </div>
+</main>
+
+<div class="chartview" id="chartView" hidden>
+  <section class="card" aria-labelledby="h-chart">
+    <div class="card-h"><h2 id="h-chart">Pole top conversion chart</h2><span class="sp"></span>
+      <button class="btn sm" id="chartBack">Back to calculator</button></div>
+    <div class="card-b">
+      <table class="ctable">
+        <thead><tr><th>Pole height</th><th>Setting depth (ft / in)</th><th>Height above ground (ft / in)</th></tr></thead>
+        <tbody id="chartBody"></tbody>
+      </table>
+      <p class="help">Setting depth = 10% of pole height + 2 ft. Height above ground = pole height − setting depth. Click any value to send it to the calculator.</p>
+    </div>
+  </section>
+  <section class="card" aria-labelledby="h-custom">
+    <div class="card-h"><h2 id="h-custom">Any pole height</h2></div>
+    <div class="card-b custom">
+      <div class="cin"><label for="poleLen">Pole height</label>
+        <input class="inp num" id="poleLen" placeholder="e.g. 70 or 840&quot;">
+        <span class="muted">feet, or inches with "</span></div>
+      <table class="ctab">
+        <thead><tr><th></th><th>Ft-in</th><th>Decimal ft</th><th>Inches</th></tr></thead>
+        <tbody>
+          <tr><th>Pole height</th><td id="cLen-fi">—</td><td id="cLen-ft">—</td><td id="cLen-in">—</td></tr>
+          <tr><th>Setting depth</th><td id="cDepth-fi">—</td><td id="cDepth-ft">—</td><td id="cDepth-in">—</td></tr>
+          <tr class="hi"><th>Above ground</th><td id="cAbove-fi">—</td><td id="cAbove-ft">—</td><td id="cAbove-in">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+</div>
+
+<dialog id="setDlg" class="wide" aria-labelledby="h-set">
+  <div class="card-h"><h2 id="h-set">Settings</h2><span class="sp"></span>
+    <button class="btn icon sm ghost" data-close aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="dlg-b">
+    <h4>Startup preset</h4>
+    <div class="field-inline"><label for="defSel">Open the app on</label><select class="inp" id="defSel" style="width:260px"></select></div>
+    <p class="hint2">This preset is selected automatically every time the app opens.</p>
+
+    <h4>Coop presets</h4>
+    <table id="presetTable"><thead><tr><th style="width:34%">Name</th><th style="width:15%">Short</th><th>Clearances (inches)</th><th style="width:34px"></th></tr></thead><tbody></tbody></table>
+    <p class="hint2">Separate values with commas. You can add a label like <kbd>Tangent: 150</kbd>. Plain numbers are <b>inches</b> here; use <kbd>4'</kbd> for feet.</p>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn sm" id="addPreset"><svg class="i"><use href="#i-plus"/></svg>Add coop</button>
+      <button class="btn sm ghost" id="resetPresets">Reset presets to defaults</button>
+    </div>
+
+    <h4>NESC (basic) automatic rules</h4>
+    <div class="note">Used for "Auto" in the spacing check. These are typical starting values; confirm them against the NESC edition and pole-owner standards for your job.</div>
+    <table id="rulesTable"><thead><tr><th>Between</th><th>And</th><th>Minimum (in)</th></tr></thead><tbody></tbody></table>
+    <div style="margin-top:8px"><button class="btn sm ghost" id="resetRules">Reset rules to defaults</button></div>
+    <div class="dlg-foot">
+      <div class="zoomctl" role="group" aria-label="Text size">
+        <span class="zl">Text size</span>
+        <button class="btn sm icon" id="zoomOut" aria-label="Smaller text" title="Smaller">A−</button>
+        <span id="zoomVal" aria-live="polite">100%</span>
+        <button class="btn sm icon" id="zoomIn" aria-label="Larger text" title="Larger">A+</button>
+        <button class="btn sm ghost" id="zoomReset" title="Back to 100%">Reset</button>
+      </div>
+      <button class="btn sm primary" data-close>Done</button>
+    </div>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toastMsg"></span><button class="btn sm" id="toastUndo">Undo</button></div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+const icon = (id, cls='i') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
+/* ---------- length parsing & formatting (internal unit: inches) ---------- */
+const NUM = '(\\d+(?:\\.\\d+)?|\\.\\d+)';
+function parseLen(raw){
+  if (raw == null) return null;
+  let s = String(raw).trim().toLowerCase()
+    .replace(/[’′‘`]/g, "'").replace(/[”″“]/g, '"').replace(/''/g, '"').replace(/,/g,'').replace(/−/g,'-');
+  if (!s) return null;
+  let sign = 1;
+  if (s[0] === '-') { sign = -1; s = s.slice(1).trim(); }
+  let m, v = null;
+  if ((m = s.match(new RegExp('^' + NUM + "\\s*(?:'|ft|feet|foot)\\s*-?\\s*(?:" + NUM + '\\s*(?:"|in|inch|inches)?)?$'))))
+    v = +m[1] * 12 + (m[2] ? +m[2] : 0);
+  else if ((m = s.match(new RegExp('^' + NUM + '\\s*(?:"|in|inch|inches)$'))))
+    v = +m[1];
+  else if ((m = s.match(new RegExp('^(\\d+)\\s*[-\\s]\\s*' + NUM + '$'))))
+    v = +m[1] * 12 + +m[2];
+  else if ((m = s.match(new RegExp('^' + NUM + '$'))))
+    v = +m[1] * 12;
+  return v == null || !isFinite(v) ? null : sign * v;
+}
+/* calculator expressions
+   plain numbers are feet (25 = 25'), but any 3+ digit number switches the whole calculation to inches (260-20 = 240")
+   heights: 25', 25.5', 25'5, 25' 5", 25'-5", 305", 305 in
+   + − × ÷ work with or without spaces: 25'5-21'5 = 4' 0", 260-20 = 240", 25' 6" × 2, 300 ÷ 4
+   × and ÷ go first; one side of × / ÷ must be a plain number (the factor)
+   shorthand kept: 25-6 on its own (no spaces, 2nd number under 12) = 25' 6" */
+const N_ = '(\\d*\\.?\\d+)';
+const IN_U = '(?:"|\'\'|inches|inch|in(?![a-z]))';
+const RX_FT = new RegExp('^' + N_ + '\\s*(?:\'|feet|foot|ft)(?:-' + N_ + '\\s*' + IN_U + '|\\s*' + N_ + '(?!\\d|\\s*(?:\'|ft|feet|foot|\\.))\\s*' + IN_U + '?)?', 'i');
+const RX_IN = new RegExp('^' + N_ + '\\s*' + IN_U, 'i');
+const RX_NUM = new RegExp('^' + N_);
+const RX_SP = new RegExp('^(\\d{1,2})\\s+' + N_ + '\\s*' + IN_U + '?(?![\\d.\'])', 'i');   // 25 6 = 25' 6"
+const bigNum = t => t.split('.')[0].length >= 3;   // 3+ digits before the decimal point
+function tokenize(src){
+  const toks = []; let s = src, m;
+  while ((s = s.replace(/^\s+/, '')).length){
+    const wantOp = toks.length && toks[toks.length - 1].k === 'v';
+    if (wantOp){
+      if (!(m = s.match(/^[+\-*/×÷]/))) return { error: `Can't read "${s.slice(0, 12)}"` };
+      toks.push({ k: 'op', op: { '×': '*', '÷': '/' }[m[0]] || m[0] }); s = s.slice(1); continue;
+    }
+    if ((m = s.match(RX_SP))) toks.push({ k: 'v', unit: true, ft: true, v: +m[1] * 12 + +m[2] });
+    else if ((m = s.match(RX_FT))) toks.push({ k: 'v', unit: true, ft: true, v: +m[1] * 12 + +(m[2] ?? m[3] ?? 0) });
+    else if ((m = s.match(RX_IN))) toks.push({ k: 'v', unit: true, v: +m[1] });
+    else if ((m = s.match(RX_NUM))) toks.push({ k: 'v', unit: false, n: +m[1], raw: m[1] });
+    else return { error: `Can't read "${s.slice(0, 12)}"` };
+    s = s.slice(m[0].length);
+  }
+  return { toks };
+}
+function evalExpr(raw){
+  let s = String(raw).replace(/[−–—]/g, '-').replace(/[’′‘`]/g, "'").replace(/[”″“]/g, '"').replace(/,/g, '').trim();
+  if (!s) return null;
+  const short = s.match(/^(\d{1,2})-(\d{1,2}(?:\.\d+)?)$/);            // 25-6 = 25' 6"
+  if (short && +short[2] < 12) return { value: +short[1] * 12 + +short[2], terms: 1 };
+  const t = tokenize(s); if (t.error) return t;
+  let toks = t.toks, partial = false;
+  // any 3+ digit number puts the whole calculation in inches (260-20 = 240"); otherwise plain numbers are feet (25 = 25')
+  const inchMode = toks.some(x => x.raw && bigNum(x.raw));
+  toks.forEach(x => { if (x.raw != null) x.v = inchMode ? x.n : x.n * 12; });
+  const hasFt = toks.some(x => x.ft), inches = !hasFt && (inchMode || toks.some(x => x.unit));
+  if (toks.length && toks[toks.length - 1].k === 'op') { toks = toks.slice(0, -1); partial = true; }   // still typing
+  if (!toks.length) return { error: 'Start with a measurement' };
+  // × and ÷ first: collapse each run of value (×|÷ value)* into one length
+  const terms = [], ops = [];
+  for (let i = 0; i < toks.length; ){
+    const run = [toks[i]], rops = []; i++;
+    while (i < toks.length && (toks[i].op === '*' || toks[i].op === '/')) { rops.push(toks[i].op); run.push(toks[i + 1]); i += 2; }
+    let li = run.findIndex(x => x.unit); if (li < 0) li = 0;
+    if (run.length > 1){
+      if (run.some((x, j) => j !== li && x.unit)) return { error: '× and ÷ need a plain number on one side (e.g. 25\' × 2)' };
+      if (li > 0 && rops[li - 1] === '/') return { error: 'Divide a height by a number, not a number by a height' };
+    }
+    let v = run[li].v;
+    for (let j = 0; j < run.length; j++){
+      if (j === li) continue;
+      const f = run[j].n, op = j === 0 ? '*' : rops[j - 1];
+      if (op === '/') { if (!f) return { error: "Can't divide by 0" }; v /= f; } else v *= f;
+    }
+    terms.push(v);
+    if (i < toks.length) { ops.push(toks[i].op); i++; }
+  }
+  let total = terms[0];
+  for (let j = 1; j < terms.length; j++) total += ops[j - 1] === '+' ? terms[j] : -terms[j];
+  return partial ? { partial: true, value: total, inches } : { value: total, terms: terms.length, inches };
+}
+const roundIn = v => Math.round(v * 100) / 100;   // decimals, never fractions: 489.5", not 489 1/2"
+function fracStr(x){
+  return String(roundIn(x));
+}
+function fmtFI(inches){
+  if (inches == null) return '—';
+  const neg = inches < 0; const t = roundIn(Math.abs(inches));
+  const ft = Math.floor(t / 12 + 1e-9), inch = t - ft * 12;
+  return (neg ? '−' : '') + `${ft}' ${fracStr(inch)}"`;
+}
+const fmtIN = v => v == null ? '—' : (v < 0 ? '−' : '') + fracStr(roundIn(Math.abs(v))) + '"';
+const fmtFT = v => v == null ? '—' : (Math.round(v / 12 * 1000) / 1000) + "'";
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const meets = (have, req) => have >= req - 1e-6;
+
+/* ---------- presets (coops) ---------- */
+const DEFAULT_PRESETS = [
+  { id:'nesc',    name:'NESC (basic)',          short:'NESC',    fixed:true, values:[{v:4,label:'Comm–comm (situational)'},{v:12,label:'Comm–comm'},{v:30,label:'Low power–comm (situational)'},{v:40,label:'Low power–comm'}] },
+  { id:'clark',   name:'Clark Energy',          short:'Clark',   values:[{v:40},{v:52}] },
+  { id:'fme',     name:'Fleming-Mason',         short:'FME',     values:[{v:40},{v:48,label:'Primary–neutral'},{v:72},{v:118},{v:208}] },
+  { id:'ice',     name:'Inter-County Electric', short:'ICE',     values:[{v:36},{v:72}] },
+  { id:'kenergy', name:'Kenergy',               short:'Kenergy', values:[{v:52}] },
+  { id:'tcrecc',  name:'Taylor County RECC',    short:'TCRECC',  values:[{v:150,label:'Tangent'},{v:240,label:'Vertical'}] },
+];
+let presets = store.get('pct.presets', clone(DEFAULT_PRESETS));
+if (!presets.some(p => p.id === 'nesc')) presets.unshift(clone(DEFAULT_PRESETS[0]));
+// Fleming-Mason's first value was entered as 36"; it is actually 48" (4 ft)
+{ const f = presets.find(p => p.id === 'fme'); if (f && ['36,40,72,118,208','40,48,72,118,208'].includes(f.values.map(x => x.v).join()) && !f.values.some(x => x.label)) { f.values = clone(DEFAULT_PRESETS.find(p => p.id === 'fme').values); store.set('pct.presets', presets); } }
+// upgrade the old NESC list (12, 40) to the current defaults with the situational 4"
+{ const n = presets.find(p => p.id === 'nesc'); if (['12,40','4,12,40'].includes(n.values.map(x => x.v).join())) n.values = clone(DEFAULT_PRESETS[0].values); }
+const savePresets = () => store.set('pct.presets', presets);
+const presetById = id => presets.find(p => p.id === id) || presets[0];
+// NESC pinned first, the coops alphabetical
+const orderedPresets = () => [presetById('nesc'), ...presets.filter(p => p.id !== 'nesc').sort((a,b) => a.name.localeCompare(b.name))];
+let defaultCoop = store.get('pct.defaultCoop', 'nesc');
+if (!presets.some(p => p.id === defaultCoop)) defaultCoop = 'nesc';
+let activeId = defaultCoop;
+const active = () => presetById(activeId);
+const valLabel = x => `${fmtIN(x.v)} (${fmtFI(x.v)})${x.label ? ' · ' + x.label : ''}`;
+const valsText = p => p.values.map(x => (x.label ? x.label + ': ' : '') + roundIn(x.v)).join(', ');
+function parseVals(text){
+  return String(text).split(/[,;\n]/).map(t => t.trim()).filter(Boolean).map(t => {
+    const m = t.match(/^(.*?):\s*(.+)$/); const label = m ? m[1].trim() : ''; const raw = (m ? m[2] : t).trim();
+    const v = /['f]/i.test(raw) ? parseLen(raw) : parseFloat(raw.replace(/["in\s]/gi, ''));
+    return v > 0 ? (label ? { v, label } : { v }) : null;
+  }).filter(Boolean);
+}
+
+function renderTabs(){
+  const list = orderedPresets();
+  $('tabs').innerHTML = list.map((p, i) => `${i === 1 ? '<div class="sep" role="presentation"></div>' : ''}
+    <button class="tab" role="tab" id="tab-${p.id}" data-id="${p.id}" aria-selected="${p.id === activeId}" tabindex="${p.id === activeId ? 0 : -1}">
+      <b>${esc(p.name)}${p.id === defaultCoop ? '<span class="star" title="Startup preset">★</span>' : ''}</b>
+      <small>${p.values.map(x => roundIn(x.v) + '"').join(' · ') || 'no values'}</small></button>`).join('');
+  $('activeTag').textContent = `Preset: ${active().name}`;
+}
+function selectTab(id, focus){
+  activeId = id;
+  // switching presets resets every required-clearance dropdown
+  calcReq = ''; gapReq = {};
+  // nothing measured yet: swap in this preset's starting lines (Fleming-Mason adds primary and neutral)
+  if (poleIsBlank()) { state.rows = defaultRows(); save(); renderTable(); }
+  renderTabs(); renderReqSel(); renderConstr(); renderCheck(); runCalc();
+  if (focus) $('tab-' + id)?.focus();
+}
+$('tabs').addEventListener('click', e => {
+  const t = e.target.closest('.tab'); if (!t) return;
+  if (!$('chartView').hidden) showChart(false);
+  if (t.dataset.id !== activeId) selectTab(t.dataset.id);
+});
+$('tabs').addEventListener('keydown', e => {
+  const ids = orderedPresets().map(p => p.id), i = ids.indexOf(activeId);
+  const next = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: ids.length - 1 }[e.key];
+  if (next == null) return; e.preventDefault();
+  selectTab(ids[(next + ids.length) % ids.length], true);
+});
+
+/* ---------- NESC automatic type rules ---------- */
+// Two categories only: everything in the low-power space follows the same NESC rule
+// Primary is optional: it counts as power for comm spacing, and some coops require 48" primary to neutral.
+const TYPES = ['Primary','Neutral','Power','Comm'];
+const TYPE_LABEL = {Primary:'Primary', Neutral:'Neutral', Power:'Low power', Comm:'Comm'};
+const TYPE_SHORT = {Primary:'Primary', Neutral:'Neutral', Power:'Power', Comm:'Comm'};
+const NEXT_TYPE = {Primary:'Neutral', Neutral:'Power', Power:'Comm', Comm:'Primary'};
+const isPowerT = t => t !== 'Comm';
+const DEFAULT_RULES = [['Power','Comm',40],['Comm','Comm',12]];
+let rules = store.get('pct.rules', clone(DEFAULT_RULES));
+if (!rules.every(r => TYPES.includes(r[0]) && TYPES.includes(r[1]))) { rules = clone(DEFAULT_RULES); store.set('pct.rules', rules); }
+// coop power space (pole top down to the highest allowed comm) and primary-to-neutral minimum
+const COOP_RULES = {
+  fme:    { tangent:118, vertical:208, pn:48 },
+  tcrecc: { tangent:150, vertical:240, pn:48 },
+  ice:    { pn:48 },                       // Inter-County: 48" primary to neutral, same as FME
+  kenergy:{ pc:52 },                       // Kenergy: comms 52" below low power instead of NESC 40"
+};
+const coopRule = () => COOP_RULES[activeId] || null;
+function ruleGap(a, b){
+  if (a === 'Primary' && b === 'Primary') return null;
+  const lowSide = t => t === 'Neutral' || t === 'Power';
+  if ((a === 'Primary' && lowSide(b)) || (b === 'Primary' && lowSide(a))) return coopRule()?.pn || null;   // primary ↔ neutral (or low power if no neutral)
+  if (lowSide(a) && lowSide(b)) return null;                                                             // neutral ↔ low power: not checked
+  if ((a === 'Comm') !== (b === 'Comm') && coopRule()?.pc) return coopRule().pc;   // coop power-to-comm override
+  const m = t => t === 'Comm' ? t : 'Power'; a = m(a); b = m(b);   // primary and neutral count as power for comm spacing
+  for (const [x,y,v] of rules) if ((x===a && y===b) || (x===b && y===a)) return +v || null;
+  return null;
+}
+
+/* ---------- calculator ---------- */
+const calcIn = $('calcIn');
+// requirement choices: NESC values are always offered, plus the active coop's values.
+// encoded as "n:<index>" (NESC) or "c:<index>" (active coop)
+function reqOptions(selected){
+  const n = presetById('nesc'), p = active();
+  const grp = (pre, ps) => `<optgroup label="${esc(ps.name)}">${ps.values.map((x,i) =>
+    `<option value="${pre}:${i}"${selected === pre + ':' + i ? ' selected' : ''}>${esc(valLabel(x))}</option>`).join('')}</optgroup>`;
+  return (p.id !== 'nesc' && p.values.length ? grp('c', p) : '') + grp('n', n);
+}
+function resolveReq(code){
+  if (!code) return null;
+  const [k, i] = String(code).split(':'), ps = k === 'n' ? presetById('nesc') : active(), x = ps.values[+i];
+  return x ? { ...x, src: ps.short } : null;
+}
+let calcReq = '';
+function renderReqSel(){ $('reqSel').innerHTML = `<option value="">— none —</option>` + reqOptions(calcReq); }
+const currentReq = () => resolveReq(calcReq);
+function statusPill(have, req){
+  if (have == null || req == null) return '';
+  const d = have - req.v;
+  return meets(have, req.v)
+    ? `<span class="pill pass">${icon('check')}Meets ${fmtIN(req.v)} · ${d > 0 ? '+' + fmtIN(d) + ' extra' : 'exact'}</span>`
+    : `<span class="pill fail">${icon('alert')}Short ${fmtIN(-d)} of ${fmtIN(req.v)}</span>`;
+}
+function runCalc(){
+  const r = evalExpr(calcIn.value);
+  const set = (a,b) => { $('cFI').textContent=a; $('cIN').textContent=b; };
+  $('calcErr').textContent = r && r.error ? r.error : '';
+  const ok = r && !r.error;
+  // a calculation done in inches shows its answer in inches (260-40 = 220"); anything with feet shows ft-in
+  $('calcOut').textContent = ok ? (r.inches ? fmtIN(r.value) : fmtFI(r.value)) : (r ? '—' : `0' 0"`);
+  ok ? set(fmtFI(r.value), fmtIN(r.value)) : set('—','—');
+  $('reqStat').innerHTML = ok ? statusPill(r.value, currentReq()) : '';
+  lastCalc = calcIn.value;   // what undo saves (the box has already changed when an input event fires)
+}
+let lastCalc = '';
+// space after a bare 1-2 digit number makes it feet: typing "25 " shows "25' " and the next number is inches
+function autoFt(el = calcIn){
+  const v = el.value;
+  if (/(^|[+\-*/×÷]\s*)\d{1,2} $/.test(v)) el.value = v.slice(0, -1) + "' ";
+}
+// same in the height boxes (attachments, pole top), only when the space was typed at the end
+const spaceFt = e => { if (e.data === ' ' && e.target.selectionStart === e.target.value.length) autoFt(e.target); };
+calcIn.addEventListener('input', e => {
+  beginEdit();
+  spaceFt(e);
+  runCalc();
+});
+$('reqSel').addEventListener('change', e => { calcReq = e.target.value; runCalc(); calcIn.focus(); });
+
+let hist = store.get('pct.history', []);
+let hideChecked = store.get('pct.hideChecked', false);
+const saveHist = () => store.set('pct.history', hist);
+function commit(){
+  const r = evalExpr(calcIn.value);
+  if (!r || r.error || r.partial) { calcIn.focus(); return; }
+  const q = currentReq();
+  pushUndo();
+  hist.unshift({ id: Date.now() + Math.random(), expr: calcIn.value.trim(), v: r.value, checked: false, note: '',
+    req: q ? q.v : null, reqLabel: q ? (q.label || '') : '', coop: q ? q.src : '' });
+  saveHist(); renderHist();
+  calcIn.value = ''; runCalc(); calcIn.focus();
+}
+calcIn.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); commit(); }
+  if (e.key === 'Escape') { if (calcIn.value) pushUndo(); calcIn.value = ''; runCalc(); }
+});
+/* calculator is the default typing target:
+   keys go to it unless another text box is focused, and it takes focus back after clicks elsewhere */
+const isTextEntry = el => !!el && el.matches('input:not([type=checkbox]):not([type=radio]), textarea, select');
+const anyDialogOpen = () => !!document.querySelector('dialog[open]');
+const calcVisible = () => !document.querySelector('main.grid').hidden;
+function focusCalc(){ if (calcVisible() && !anyDialogOpen()) calcIn.focus({ preventScroll: true }); }
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.altKey || e.metaKey || anyDialogOpen() || !calcVisible()) return;
+  const el = document.activeElement;
+  if (isTextEntry(el)) return;                                   // user is typing in another box
+  if (el && el.matches('button, [role=tab]') && (e.key === 'Enter' || e.key === ' ')) return; // keyboard button use
+  const k = e.key;
+  if (k.length === 1 && /[0-9.'"+\-*\/\s a-z]/i.test(k)) {
+    e.preventDefault(); calcIn.focus({ preventScroll: true });
+    beginEdit(); calcIn.value += k;
+    if (k === ' ') autoFt();
+    runCalc();
+  } else if (k === 'Backspace') { e.preventDefault(); calcIn.focus(); beginEdit(); calcIn.value = calcIn.value.slice(0, -1); runCalc(); }
+  else if (k === 'Enter') { e.preventDefault(); calcIn.focus(); commit(); }
+  else if (k === 'Escape') { calcIn.focus(); if (calcIn.value) pushUndo(); calcIn.value = ''; runCalc(); }
+}, true);
+// mouse clicks on anything that isn't a text box hand typing back to the calculator
+document.addEventListener('click', e => {
+  if (e.detail === 0) return;                                    // keyboard-activated click: leave focus alone
+  setTimeout(() => { if (!isTextEntry(document.activeElement)) focusCalc(); }, 0);
+});
+window.addEventListener('focus', () => setTimeout(() => { if (!isTextEntry(document.activeElement)) focusCalc(); }, 0));
+
+$('keypad').addEventListener('click', e => {
+  const k = e.target.closest('button')?.dataset.k; if (k == null) return;
+  if (k === 'enter') return commit();
+  beginEdit();
+  if (k === 'clear') calcIn.value = '';
+  else if (k === 'back') calcIn.value = calcIn.value.replace(/(\s[+\-×÷*\/]\s|.)$/, '');
+  else calcIn.value += k;
+  runCalc(); calcIn.focus();
+});
+
+/* ---------- history ---------- */
+function reqCell(h){
+  if (h.req == null) return '<span class="muted">—</span>';
+  const ok = meets(h.v, h.req);
+  return `<span class="reqpill ${ok ? 'pass' : 'fail'}" title="${esc(h.coop)}${h.reqLabel ? ' ' + esc(h.reqLabel) : ''}: needs ${fmtIN(h.req)}${ok ? '' : ', short ' + fmtIN(h.req - h.v)}">${ok ? '✓' : '✗'} ${fmtIN(h.req)}</span>`;
+}
+const cpBtn = v => `<button class="cp" data-copy="${esc(v.replace('−','-'))}" title="Copy ${esc(v)}" aria-label="Copy ${esc(v)}"><svg class="i"><use href="#i-copy"/></svg></button>`;
+// the calculation as it was typed, plus "= answer" when it was an equation (25'5 - 21'5 = 4' 0")
+function eqLine(h){
+  if (!h.expr) return '';
+  const r = evalExpr(h.expr), isEq = r && !r.error && r.terms > 1;
+  const ans = isEq ? (r.inches ? fmtIN(r.value) : fmtFI(r.value)) : '';
+  return `<span class="expr" title="${esc(isEq ? `${h.expr} = ${ans}` : h.expr)}">${esc(h.expr)}</span>`;
+}
+function renderHist(){
+  const tb = document.querySelector('#histTable tbody');
+  const shown = hist.filter(h => !(hideChecked && h.checked));
+  tb.innerHTML = shown.map(h => `<tr data-id="${h.id}" class="${h.checked ? 'checked' : ''}">
+    <td><input type="checkbox" class="chk" data-f="checked"${h.checked ? ' checked' : ''} aria-label="Mark ${esc(fmtFI(h.v))} as checked"></td>
+    <td class="dim"><span class="vc"><button class="val" data-ins="${esc(fmtFI(h.v).replace('−','-'))}" title="Use in calculator">${fmtFI(h.v)}</button>${cpBtn(fmtFI(h.v))}</span></td>
+    <td class="dim fcell">${eqLine(h)}</td>
+    <td class="dim"><span class="vc"><button class="val" data-ins="${esc(fmtIN(h.v).replace('−','-'))}" title="Use in calculator">${fmtIN(h.v)}</button></span></td>
+    <td class="dim">${reqCell(h)}</td>
+    <td class="acts">${cpBtn(fmtIN(h.v))}<button class="btn icon sm ghost" data-act="del" aria-label="Delete entry">${icon('x')}</button></td></tr>
+    <tr data-id="${h.id}" class="sub ${h.checked ? 'checked' : ''}"><td></td><td colspan="5" class="dim"><div class="subrow">
+      <input class="inp" data-f="note" value="${esc(h.note)}" placeholder="Add note" aria-label="Note"></div></td></tr>`).join('')
+    || `<tr><td colspan="6" class="empty">${hist.length ? 'Everything is checked.' : 'No entries yet. Type a measurement and press Enter.'}</td></tr>`;
+  const done = hist.filter(h => h.checked).length;
+  const c = $('histCount');
+  c.textContent = hist.length ? `${done} / ${hist.length} checked` : '';
+  c.className = 'counter' + (hist.length && done === hist.length ? ' done' : '');
+  c.hidden = !hist.length;
+  $('histHide').setAttribute('aria-pressed', String(hideChecked));
+}
+const histBody = document.querySelector('#histTable tbody');
+const histItem = el => hist.find(h => String(h.id) === el.closest('tr')?.dataset.id);
+histBody.addEventListener('change', e => {
+  const h = histItem(e.target);
+  if (h && e.target.dataset.f === 'checked') { pushUndo(); h.checked = e.target.checked; saveHist(); renderHist(); }
+});
+histBody.addEventListener('input', e => {
+  const h = histItem(e.target); if (h && e.target.dataset.f === 'note') { beginEdit(); h.note = e.target.value; saveHist(); }
+});
+histBody.addEventListener('click', e => {
+  const h = histItem(e.target); if (!h) return;
+  const cp = e.target.closest('.cp');
+  if (cp) {
+    navigator.clipboard.writeText(cp.dataset.copy).then(() => {
+      cp.classList.add('done'); cp.title = 'Copied'; setTimeout(() => { cp.classList.remove('done'); cp.title = 'Copy ' + cp.dataset.copy; }, 1200);
+    }, () => alert('Could not copy to clipboard.'));
+    return;
+  }
+  if (e.target.closest('[data-act=del]')) { pushUndo(); hist = hist.filter(x => x !== h); saveHist(); renderHist(); toast('History entry deleted'); return; }
+  const ins = e.target.closest('.val')?.dataset.ins;
+  if (ins) {
+    calcIn.value = /[+\-−×÷*\/]\s*$/.test(calcIn.value) ? calcIn.value.replace(/\s*$/, ' ') + ins : ins;
+    runCalc(); calcIn.focus();
+  }
+});
+$('histHide').onclick = () => { hideChecked = !hideChecked; store.set('pct.hideChecked', hideChecked); renderHist(); };
+$('histClear').onclick = () => { if (!hist.length) return; pushUndo(); hist = []; saveHist(); renderHist(); toast('History cleared'); };
+async function copyText(text, btn){
+  try { await navigator.clipboard.writeText(text); btn.style.color = 'var(--ok)'; setTimeout(() => { btn.style.color = ''; }, 1200); }
+  catch (err) { alert('Could not copy to clipboard.'); }
+}
+$('histCopy').onclick = e => copyText([['Checked','Feet-inches','Inches','Entered','Preset','Required (in)','Status','Note'],
+  ...hist.map(h => [h.checked ? 'Yes' : 'No', fmtFI(h.v), roundIn(h.v), h.expr, h.coop || '', h.req ?? '',
+    h.req == null ? '' : meets(h.v, h.req) ? 'OK' : 'SHORT ' + roundIn(h.req - h.v) + '"', h.note])].map(r => r.join('\t')).join('\n'), e.currentTarget);
+
+/* ---------- attachments ---------- */
+let uid = 1;
+const blankRow = (name='', type='Comm') => ({ id: uid++, name, type, existing:'', proposed:'' });
+// starting lines for a new pole: Fleming-Mason and Inter-County start with primary and neutral too (all optional)
+const defaultRows = () => ['fme', 'ice'].includes(activeId)
+  ? [blankRow('Primary','Primary'), blankRow('Neutral','Neutral'), blankRow('Low power','Power'), blankRow('Comm 1','Comm')]
+  : [blankRow('Low power','Power'), blankRow('Comm 1','Comm')];
+const poleIsBlank = () => state.rows.every(r => !String(r.existing).trim() && !String(r.proposed).trim()) && !String(state.poleTop || '').trim();
+let state = store.get('pct.pole', null) || { poleId:'', rows: defaultRows() };
+// older saves used detailed types (Neutral, Secondary, ...): fold them into the two categories
+state.rows.forEach(r => { if (!TYPES.includes(r.type)) r.type = (r.type === 'Other' ? 'Comm' : 'Power'); });
+state.rows.forEach(r => { uid = Math.max(uid, r.id + 1); });
+let gapReq = {}; // "upperId-lowerId" -> preset value index; missing = Auto (NESC rule)
+const save = () => store.set('pct.pole', state);
+// attachment heights: a plain number of 100 or more is inches (300 = 300"); smaller plain numbers are feet
+const parseH = raw => { const t = String(raw ?? '').trim(); return /^\d+(\.\d+)?$/.test(t) && +t >= 100 ? +t : parseLen(t); };
+const effective = r => { const p = parseH(r.proposed); return p != null ? p : parseH(r.existing); };
+if (state.poleTop == null) state.poleTop = '';
+if (!state.constr) state.constr = 'tangent';
+
+function convCell(r){
+  const e = parseH(r.existing), p = parseH(r.proposed);
+  let h = '';
+  if (e != null) h += fmtFI(e);
+  if (p != null) h += (h ? ' → ' : '') + `<b>${fmtFI(p)}</b>`;
+  if (p != null && e != null) { const d = p - e; h += ` <span class="delta">${d>=0?'+':''}${fmtIN(d)}</span>`; }
+  if ((r.existing && e == null) || (r.proposed && p == null)) h += `<div class="ferr">Can't read height</div>`;
+  return h || '<span class="muted">—</span>';
+}
+function renderTable(){
+  document.querySelector('#attTable tbody').innerHTML = state.rows.map(r => `<tr data-id="${r.id}">
+    <td><input class="inp" data-f="name" value="${esc(r.name)}" placeholder="Name" aria-label="Attachment name"></td>
+    <td><button class="tg tg-${r.type}" data-act="type" title="Click to switch Low power / Comm / Primary" aria-label="Type ${TYPE_LABEL[r.type]}, click to switch">${TYPE_SHORT[r.type]}</button></td>
+    <td><input class="inp num" data-f="existing" value="${esc(r.existing)}" placeholder="in or ft" aria-label="Existing height"></td>
+    <td><input class="inp num" data-f="proposed" value="${esc(r.proposed)}" placeholder="opt." aria-label="Proposed height (optional)"></td>
+    <td class="cv">${convCell(r)}</td>
+    <td><button class="btn icon sm ghost" data-act="del" aria-label="Delete attachment">${icon('x')}</button></td></tr>`).join('')
+    || `<tr><td colspan="6" class="empty">No attachments. Click Add.</td></tr>`;
+  
+  $('poleTop').value = state.poleTop || '';
+  renderConstr();
+}
+const attBody = document.querySelector('#attTable tbody');
+attBody.addEventListener('input', e => {
+  const tr = e.target.closest('tr'), f = e.target.dataset.f; if (!tr || !f) return;
+  beginEdit();
+  if (f === 'existing' || f === 'proposed') spaceFt(e);
+  const r = state.rows.find(x => x.id == tr.dataset.id); r[f] = e.target.value;
+  tr.querySelector('.cv').innerHTML = convCell(r);
+  if (f === 'existing' || f === 'proposed') e.target.classList.toggle('bad', !!e.target.value.trim() && parseH(e.target.value) == null);
+  save(); renderCheck();
+});
+attBody.addEventListener('click', e => {
+  const tg = e.target.closest('[data-act=type]');
+  if (tg) {
+    const r = state.rows.find(x => x.id == tg.closest('tr').dataset.id);
+    pushUndo();
+    const wasAuto = r.type === 'Comm' ? autoName(r.name) : Object.values(TYPE_LABEL).includes(r.name.trim()) || !r.name.trim();
+    r.type = NEXT_TYPE[r.type] || 'Comm';
+    if (wasAuto) r.name = r.type === 'Comm' ? '' : TYPE_LABEL[r.type];   // keep auto names matching the type
+    renumberComms();
+    save(); renderTable(); renderCheck(); return;
+  }
+  if (!e.target.closest('[data-act=del]')) return;
+  const id = +e.target.closest('tr').dataset.id;
+  pushUndo();
+  state.rows = state.rows.filter(r => r.id !== id); renumberComms(); save(); renderTable(); renderCheck(); toast('Attachment deleted');
+});
+attBody.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !e.target.matches('input')) return;
+  e.preventDefault();
+  const inputs = [...attBody.querySelectorAll('input')], i = inputs.indexOf(e.target);
+  if (i >= inputs.length - 2) { $('addRow').click(); } else { inputs[i+1]?.focus(); }
+});
+// comms are numbered in table order (Comm 1, Comm 2, ...); names you typed yourself are kept but still count
+const autoName = n => !n.trim() || /^comm\s*\d*$/i.test(n.trim());
+function renumberComms(){ let k = 0; state.rows.forEach(r => { if (r.type !== 'Comm') return; k++; if (autoName(r.name)) r.name = 'Comm ' + k; }); }
+$('addRow').onclick = () => {
+  pushUndo();
+  state.rows.push(blankRow('', 'Comm')); renumberComms(); save(); renderTable(); renderCheck();
+  attBody.querySelector('tr:last-child [data-f=existing]')?.focus();
+};
+
+$('clearPole').onclick = () => {
+  pushUndo();
+  // a new pole starts clean: attachments, pole top, history and calculator (the preset and construction stay)
+  state = { poleId:'', poleTop:'', constr:state.constr || 'tangent', rows: defaultRows() };
+  hist = []; gapReq = {}; calcReq = ''; calcIn.value = '';
+  save(); saveHist(); renderTable(); renderHist(); renderReqSel(); renderCheck(); runCalc();
+  toast('New pole · all entries cleared (Ctrl+Z to undo)');
+};
+
+/* ---------- spacing check ---------- */
+const sortedRows = () => state.rows.map(r => ({ r, h: effective(r) })).filter(x => x.h != null).sort((a,b) => b.h - a.h);
+// required clearance for a gap: chosen preset value, else the NESC automatic rule
+function gapRequirement(upper, lower){
+  const key = upper.r.id + '-' + lower.r.id, sel = gapReq[key];
+  const x = resolveReq(sel);
+  if (x) return { v: x.v, src: x.src, detail: x.label || '', key, sel };
+  const auto = ruleGap(upper.r.type, lower.r.type);
+  const coopPc = coopRule()?.pc && (upper.r.type === 'Comm') !== (lower.r.type === 'Comm');
+  return { v: auto, src: auto ? (coopPc ? active().short : 'NESC') : '', detail: '', key, sel: null };
+}
+// power space: from the pole top down this far is power only (Fleming-Mason / Taylor County)
+function powerSpace(){
+  const c = coopRule(), top = parseH(state.poleTop);
+  if (!c || !c.tangent || top == null) return null;
+  const v = c[state.constr] || c.tangent;
+  return { top, v, max: top - v };
+}
+const nm = x => x.r.name || TYPE_LABEL[x.r.type];
+// highest legal height for each comm, top comm first, so each fix accounts for the fixes above it
+function solveComms(list, sp){
+  const plan = {};
+  // 1) power side first: a neutral (or low power) closer than the coop minimum to a primary above it gets lowered
+  const newH = new Map();
+  list.forEach(x => {
+    if (x.r.type !== 'Neutral' && x.r.type !== 'Power') return;
+    let to = x.h, why = [], msg = '';
+    list.forEach(pr => {
+      if (pr.r.type !== 'Primary' || pr.h < x.h - 1e-6) return;
+      const q = gapRequirement(pr, x); if (!q.v || pr.h - x.h >= q.v - 1e-6) return;   // already far enough below
+      if (pr.h - q.v < to) to = pr.h - q.v;
+      why.push(`${fmtIN(q.v)} below ${nm(pr)} (${fmtIN(pr.h)})`); msg = `${fmtIN(pr.h - x.h)} to ${nm(pr)} · needs ${fmtIN(q.v)}`;
+    });
+    if (to < x.h - 1e-6) { to = Math.floor(to * 4 + 1e-6) / 4; newH.set(x.r.id, to); plan[x.r.id] = { to, drop: x.h - to, why, warn: '', power: true, msg }; }
+  });
+  // 2) comms, top first, measured from the power attachments at their fixed heights
+  const powers = list.filter(x => isPowerT(x.r.type)).map(x => newH.has(x.r.id) ? { ...x, h: newH.get(x.r.id), moved: true } : x);
+  let prev = null;
+  list.forEach(x => {
+    if (x.r.type !== 'Comm') return;
+    let to = x.h; const why = [];
+    const cap = (lim, text) => { if (lim < to - 1e-6) to = lim; if (lim < x.h - 1e-6) why.push(text); };
+    powers.filter(p => p.h > x.h - 1e-6).forEach(p => {
+      const q = gapRequirement(p, x); if (q.v) cap(p.h - q.v, `${fmtIN(q.v)} below ${nm(p)}${p.moved ? ' at its new ' + fmtIN(p.h) : ' (' + fmtIN(p.h) + ')'}`);
+    });
+    if (sp) cap(sp.max, `Out of power space: ${fmtIN(sp.top)} top − ${fmtIN(sp.v)} = ${fmtIN(sp.max)}`);
+    if (prev) { const q = gapRequirement(prev.x, x);
+      if (q.v) cap(prev.to - q.v, `${fmtIN(q.v)} below ${nm(prev.x)}${prev.to < prev.x.h - 1e-6 ? ' at its new ' + fmtIN(prev.to) : ' (' + fmtIN(prev.to) + ')'}`); }
+    to = Math.floor(to * 4 + 1e-6) / 4;
+    const p = { to, drop: x.h - to, why, warn: '' };
+    // a lowered comm must not end up crowding a power attachment below it
+    if (p.drop > 0) powers.filter(pw => pw.h < x.h).forEach(pw => {
+      const q = gapRequirement(pw, x); if (q.v && Math.abs(to - pw.h) < q.v - 1e-6) p.warn = `Too close to ${nm(pw)} at ${fmtIN(pw.h)} · needs field review`;
+    });
+    if (to <= 0) p.warn = 'No room on this pole · needs field review';
+    plan[x.r.id] = p; prev = { x, to };
+  });
+  return plan;
+}
+// History card: violations grouped by kind, names only (no measurements or fixes)
+function renderExViol(exv, n){
+  const c = $('exvCount'), box = $('exvList');
+  c.textContent = n ? (exv.length ? exv.length : 'None') : '';
+  c.className = 'exv-n' + (exv.length ? '' : ' ok'); c.hidden = !n;
+  if (!n) { box.innerHTML = '<div class="exv-empty">Enter attachment heights to check.</div>'; return; }
+  if (!exv.length) { box.innerHTML = '<div class="exv-empty">No violations.</div>'; return; }
+  const kinds = [...new Set(exv.map(e => e.kind))];
+  box.innerHTML = kinds.map(k => `<div class="exv-g"><h4>${esc(k)}</h4><ul>${exv.filter(e => e.kind === k)
+    .map(e => `<li><b>${esc(e.who)}</b> <span>in violation to</span> ${esc(e.to)}</li>`).join('')}</ul></div>`).join('');
+}
+function renderCheck(){
+  const list = sortedRows(), sp = powerSpace(), rule = coopRule(), top = parseH(state.poleTop);
+  $('ptWrap').hidden = !rule?.tangent;
+  // pole top is optional: when given it draws on the stack and flags anything at or above it
+  const overTop = top == null ? [] : list.filter(x => x.h >= top - 1e-6);
+  $('ptConv').textContent = top != null ? `${fmtFI(top)} · ${fmtIN(top)}` : '';
+  const ptNote = $('ptNote');
+  ptNote.className = 'ptnote' + (overTop.length ? ' bad' : '');
+  ptNote.textContent = overTop.length ? `${overTop.map(nm).join(', ')} at or above pole top`
+    : top != null && sp ? `Power space: no comms above ${fmtIN(sp.max)}` : top == null ? 'Leave blank if unknown' : '';
+  // pass 1: every adjacent gap, plus every power-to-comm pair and the power space
+  const gaps = [], viol = {}, pwrIssue = {};
+  const add = (id, msg) => { const a = (viol[id] ||= []); if (!a.includes(msg)) a.push(msg); };
+  // for "Existing violations" in the history card: kind of rule, the attachment, and what it is in violation to
+  const exv = [], exAdd = (kind, who, to) => { if (!exv.some(e => e.kind === kind && e.who === who && e.to === to)) exv.push({ kind, who, to }); };
+  const pairKind = (u, l) => u.r.type === 'Comm' && l.r.type === 'Comm' ? 'Comm to comm'
+    : u.r.type === 'Comm' || l.r.type === 'Comm' ? `${TYPE_LABEL[u.r.type === 'Comm' ? l.r.type : u.r.type]} to comm`
+    : `${TYPE_LABEL[u.r.type]} to ${TYPE_LABEL[l.r.type].toLowerCase()}`;
+  list.forEach((x, i) => {
+    const next = list[i+1]; if (!next) return;
+    const gap = x.h - next.h, req = gapRequirement(x, next), auto = ruleGap(x.r.type, next.r.type);
+    const ok = req.v ? meets(gap, req.v) : null;
+    gaps[i] = { gap, req, auto, ok, bothPower: isPowerT(x.r.type) && isPowerT(next.r.type) && !req.v };
+    if (ok === false && isPowerT(x.r.type) && isPowerT(next.r.type)) pwrIssue[x.r.id] = pwrIssue[next.r.id] = true;
+    if (ok === false) {
+      exAdd(pairKind(x, next), nm(next), nm(x));
+      add(x.r.id, `${fmtIN(gap)} to ${nm(next)} · needs ${fmtIN(req.v)}`);
+      add(next.r.id, `${fmtIN(gap)} to ${nm(x)} · needs ${fmtIN(req.v)}`);
+    }
+  });
+  let extra = 0;
+  list.forEach((c, j) => { if (c.r.type !== 'Comm') return;
+    list.forEach((p, i) => { if (i >= j - 1 || !isPowerT(p.r.type)) return;      // non-adjacent power above
+      const q = gapRequirement(p, c), gap = p.h - c.h;
+      if (q.v && !meets(gap, q.v)) { extra++; exAdd(pairKind(p, c), nm(c), nm(p)); add(c.r.id, `${fmtIN(gap)} to ${nm(p)} · needs ${fmtIN(q.v)}`); add(p.r.id, `${fmtIN(gap)} to ${nm(c)} · needs ${fmtIN(q.v)}`); }
+    });
+    if (top != null && c.h >= top - 1e-6) { extra++; add(c.r.id, `At or above pole top ${fmtIN(top)}`); }
+    else if (sp && c.h > sp.max + 1e-6) { extra++; exAdd('Power space', nm(c), `power space (${state.constr})`); add(c.r.id, `In power space · ${fmtIN(c.h - sp.max)} above the ${fmtIN(sp.max)} limit`); }
+  });
+  overTop.forEach(x => exAdd('Pole top', nm(x), 'pole top'));
+  renderExViol(exv, list.length);
+  // only comms are ever highlighted: power stays where it is, the comms are what move
+  list.forEach(x => { if (isPowerT(x.r.type)) delete viol[x.r.id]; });
+  const plan = solveComms(list, sp);
+  // neutrals that must come down for primary spacing are highlighted too (low power never is)
+  list.forEach(x => { const f = plan[x.r.id]; if (f?.power && x.r.type === 'Neutral') viol[x.r.id] = [f.msg]; });
+  // pass 2: the stack (left) with the fix plan (right)
+  let fails = 0, checks = 0, lowers = 0;
+  let html = `<div class="colh">Check · top to bottom</div><div class="colh">Fix</div>`;
+  let topDrawn = top == null, limitDrawn = !sp;
+  const drawTop = () => { html += `<div class="limit top">Pole top ${fmtIN(top)} (${fmtFI(top)})</div><div></div>`; topDrawn = true; };
+  const drawLimit = () => { html += `<div class="limit">Power space · no comms above ${fmtIN(sp.max)} (${fmtFI(sp.max)})</div><div></div>`; limitDrawn = true; };
+  list.forEach((x, i) => {
+    if (!topDrawn && x.h < top - 1e-6) drawTop();
+    if (!limitDrawn && x.h <= sp.max + 1e-6) drawLimit();
+    const moved = parseH(x.r.proposed) != null, bad = !!viol[x.r.id];
+    html += `<div class="att${bad ? ' bad' : ''}"><span class="sw c-${x.r.type}"></span>
+      <span class="nm">${bad ? icon('alert') + ' ' : ''}${esc(nm(x))}<small>${TYPE_LABEL[x.r.type]}${moved ? ' · proposed' : ''}</small></span>
+      <span class="h">${fmtFI(x.h)}<small>${fmtIN(x.h)}</small></span></div>`;
+    const p = plan[x.r.id];
+    if (p && p.drop > 0) { lowers++;
+      html += `<div class="fix low"><b>Lower ${fmtIN(p.drop)}</b> → <b>${fmtIN(p.to)}</b>
+        <small>${p.why.map(esc).join('<br>')}</small>${p.warn ? `<small class="warn">${esc(p.warn)}</small>` : ''}</div>`;
+    } else if (overTop.includes(x)) html += `<div class="fix ok"><span class="warn">At or above pole top · check height</span></div>`;
+    else if (p) html += `<div class="fix ok">No change</div>`;
+    else html += `<div class="fix ok">${pwrIssue[x.r.id] && x.r.type === 'Primary' ? 'Stays · neutral below moves' : pwrIssue[x.r.id] ? '<span class="warn">Power-side fix (primary–neutral)</span>' : bad ? 'Stays · comms below move' : ''}</div>`;
+    const g = gaps[i]; if (!g) return;
+    const next = list[i+1];
+    const sel = g.bothPower && g.req.sel == null ? '' : `<select class="inp" data-gap="${g.req.key}" aria-label="Required clearance between ${esc(nm(x))} and ${esc(nm(next))}">
+      <option value="">Auto · ${g.auto ? fmtIN(g.auto) : 'no rule'}</option>${reqOptions(g.req.sel)}</select>`;
+    let pill = g.bothPower ? `<span class="muted">power to power · not checked</span>` : `<span class="pill na">No rule</span>`;
+    if (g.req.v){ checks++; if (!g.ok) fails++;
+      pill = g.ok ? `<span class="pill pass">${icon('check')}Meets ${esc(g.req.src)}</span>`
+                  : `<span class="pill fail">${icon('alert')}Short ${fmtIN(g.req.v - g.gap)}</span>`; }
+    html += `<div class="gap${g.ok === false ? ' badgap' : ''}"><span class="ln"></span><span class="num">${fmtIN(g.gap)}</span>${sel}${pill}</div><div></div>`;
+  });
+  if (!topDrawn) drawTop();
+  if (sp && !limitDrawn) drawLimit();
+  $('diagram').innerHTML = list.length ? `<div class="chk2">${html}</div>` : '<div class="empty">Enter existing heights to see the spacing. Proposed heights are optional.</div>';
+  const nv = fails + extra;
+  $('summary').innerHTML = !checks && !extra ? '' : nv
+    ? `<span class="sum fail" title="${lowers} comm${lowers === 1 ? '' : 's'} to lower">${nv} violation${nv > 1 ? 's' : ''}</span>`
+    : `<span class="sum pass">All clear</span>`;
+  markViolations(viol);
+  lastPlan = plan;
+}
+let lastPlan = {};
+function renderConstr(){
+  const c = coopRule(), cur = state.constr === 'vertical' ? 'vertical' : 'tangent';
+  $('constr').querySelectorAll('button').forEach(b => {
+    const k = b.dataset.c, name = k === 'vertical' ? 'Vertical' : 'Tangent';
+    b.textContent = c?.tangent ? `${name} ${fmtIN(c[k])}` : name;
+    b.setAttribute('aria-checked', String(k === cur));
+  });
+}
+$('poleTop').addEventListener('input', e => {
+  beginEdit(); spaceFt(e); state.poleTop = e.target.value;
+  e.target.classList.toggle('bad', !!e.target.value.trim() && parseH(e.target.value) == null);
+  save(); renderCheck();
+});
+$('constr').onclick = e => {
+  const k = e.target.closest('button')?.dataset.c; if (!k || k === state.constr) return;
+  pushUndo(); state.constr = k; save(); renderConstr(); renderCheck();
+};
+// highlight attachment rows (and the height field actually used) that violate spacing
+function markViolations(viol){
+  attBody.querySelectorAll('tr[data-id]').forEach(tr => {
+    const r = state.rows.find(x => x.id == tr.dataset.id); if (!r) return;
+    const msgs = viol[r.id], usesProposed = parseH(r.proposed) != null;
+    tr.classList.toggle('viol', !!msgs);
+    tr.querySelector('[data-f=existing]')?.classList.toggle('vio', !!msgs && !usesProposed);
+    tr.querySelector('[data-f=proposed]')?.classList.toggle('vio', !!msgs && usesProposed);
+    const cv = tr.querySelector('.cv'); cv.querySelector('.vmsg')?.remove();
+    if (msgs) cv.insertAdjacentHTML('beforeend', `<div class="vmsg" title="${esc(msgs.join(' | '))}">${esc(msgs[0])}${msgs.length > 1 ? ` <b>+${msgs.length - 1} more</b>` : ''}</div>`);
+  });
+}
+$('diagram').addEventListener('change', e => {
+  const k = e.target.dataset.gap; if (!k) return;
+  pushUndo();
+  if (e.target.value === '') delete gapReq[k]; else gapReq[k] = e.target.value;
+  renderCheck();
+});
+
+/* ---------- export ---------- */
+function tableRows(){
+  const head = ['Preset','Attachment','Type','Existing (ft-in)','Existing (in)','Proposed (ft-in)','Proposed (in)','Gap to next below (in)','Required (in)','Required from','Status','Fix'];
+  const list = sortedRows();
+  return [head, ...list.map((x,i) => {
+    const e = parseH(x.r.existing), p = parseH(x.r.proposed), next = list[i+1];
+    let gap='', req='', src='', st='';
+    if (next){ const g = x.h - next.h; gap = roundIn(g); const q = gapRequirement(x, next);
+      if (q.v){ req = q.v; src = q.src; st = meets(g, q.v) ? 'Meets ' + q.src : 'Fails ' + q.src + ' (short ' + roundIn(q.v - g) + '")'; } }
+    const f = lastPlan[x.r.id], fix = f && f.drop > 0 ? `Lower ${roundIn(f.drop)}" to ${roundIn(f.to)}"` : '';
+    return [active().short, x.r.name, TYPE_LABEL[x.r.type], e!=null?fmtFI(e):'', e!=null?roundIn(e):'', p!=null?fmtFI(p):'', p!=null?roundIn(p):'', gap, req, src, st, fix];
+  })];
+}
+$('exportCsv').onclick = () => {
+  const csv = tableRows().map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], {type:'text/csv'}));
+  a.download = 'pole_clearances.csv';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+$('copyTable').onclick = e => copyText(tableRows().map(r => r.join('\t')).join('\n'), e.currentTarget);
+
+/* ---------- settings ---------- */
+function renderSettings(){
+  $('defSel').innerHTML = orderedPresets().map(p => `<option value="${p.id}"${p.id === defaultCoop ? ' selected' : ''}>${esc(p.name)}</option>`).join('');
+  document.querySelector('#presetTable tbody').innerHTML = orderedPresets().map(p => `<tr data-id="${p.id}">
+    <td><input class="inp" data-f="name" value="${esc(p.name)}" aria-label="Preset name"${p.fixed ? ' disabled' : ''}></td>
+    <td><input class="inp" data-f="short" value="${esc(p.short)}" aria-label="Short name"${p.fixed ? ' disabled' : ''}></td>
+    <td><input class="inp num" data-f="values" value="${esc(valsText(p))}" aria-label="Clearance values for ${esc(p.name)}"></td>
+    <td>${p.fixed ? '' : `<button class="btn icon sm ghost" data-act="del" aria-label="Delete ${esc(p.name)}">${icon('trash')}</button>`}</td></tr>`).join('');
+  document.querySelector('#rulesTable tbody').innerHTML = rules.map((r,i) => `<tr><td>${TYPE_LABEL[r[0]]}</td><td>${TYPE_LABEL[r[1]]}</td>
+    <td><input class="inp num" data-rule="${i}" value="${esc(r[2])}" inputmode="decimal" style="width:90px" aria-label="Minimum inches between ${TYPE_LABEL[r[0]]} and ${TYPE_LABEL[r[1]]}"></td></tr>`).join('');
+}
+function refreshAll(){ renderTabs(); renderReqSel(); renderCheck(); runCalc(); }
+const openSettings = () => { renderSettings(); $('setDlg').showModal(); };
+$('openSettings').onclick = openSettings; $('railEdit').onclick = openSettings;
+$('setDlg').addEventListener('click', e => { if (e.target.closest('[data-close]')) $('setDlg').close(); });
+$('setDlg').addEventListener('close', () => setTimeout(focusCalc, 0));
+// text size: 80%-200% in 10% steps, remembered on this PC
+let zoom = +store.get('pct.zoom', 1) || 1;
+// stack the columns when the zoomed width gets narrow, like a smaller screen would
+function fitLayout(){ const w = innerWidth / zoom, h = document.documentElement.classList;
+  h.toggle('w-md', zoom > 1 && w <= 1180); h.toggle('w-sm', zoom > 1 && w <= 760); }
+addEventListener('resize', fitLayout);
+function applyZoom(z){
+  zoom = Math.min(2, Math.max(0.8, Math.round(z * 10) / 10));
+  document.documentElement.style.setProperty('--z', zoom);
+  $('zoomVal').textContent = Math.round(zoom * 100) + '%';
+  $('zoomOut').disabled = zoom <= 0.8; $('zoomIn').disabled = zoom >= 2;
+  fitLayout();
+  store.set('pct.zoom', zoom);
+}
+$('zoomOut').onclick = () => applyZoom(zoom - 0.1);
+$('zoomIn').onclick = () => applyZoom(zoom + 0.1);
+$('zoomReset').onclick = () => applyZoom(1);
+applyZoom(zoom);
+$('defSel').onchange = e => { defaultCoop = e.target.value; store.set('pct.defaultCoop', defaultCoop); renderTabs(); };
+const presetBody = document.querySelector('#presetTable tbody');
+presetBody.addEventListener('change', e => {
+  const p = presets.find(x => x.id === e.target.closest('tr')?.dataset.id), f = e.target.dataset.f; if (!p || !f) return;
+  if (f === 'values') { p.values = parseVals(e.target.value); e.target.value = valsText(p); calcReq = ''; gapReq = {}; }
+  else p[f] = e.target.value.trim() || p[f];
+  savePresets(); refreshAll(); renderSettingsKeepFocus();
+});
+function renderSettingsKeepFocus(){ $('defSel').innerHTML = orderedPresets().map(p => `<option value="${p.id}"${p.id === defaultCoop ? ' selected' : ''}>${esc(p.name)}</option>`).join(''); }
+presetBody.addEventListener('click', e => {
+  const b = e.target.closest('[data-act=del]'); if (!b) return;
+  const id = b.closest('tr').dataset.id, p = presetById(id);
+  if (!confirm(`Delete the ${p.name} preset?`)) return;
+  presets = presets.filter(x => x.id !== id);
+  if (defaultCoop === id) { defaultCoop = 'nesc'; store.set('pct.defaultCoop', defaultCoop); }
+  if (activeId === id) activeId = 'nesc';
+  savePresets(); renderSettings(); selectTab(activeId);
+});
+$('addPreset').onclick = () => {
+  const id = 'c' + Date.now();
+  presets.push({ id, name:'New coop', short:'NEW', values:[] }); savePresets(); renderSettings(); renderTabs();
+  presetBody.querySelector(`tr[data-id="${id}"] input`)?.select();
+};
+$('resetPresets').onclick = () => {
+  if (!confirm('Reset all coop presets to the defaults? Custom coops will be removed.')) return;
+  presets = clone(DEFAULT_PRESETS); savePresets();
+  if (!presets.some(p => p.id === defaultCoop)) { defaultCoop = 'nesc'; store.set('pct.defaultCoop', defaultCoop); }
+  if (!presets.some(p => p.id === activeId)) activeId = 'nesc';
+  renderSettings(); selectTab(activeId);
+};
+$('rulesTable').addEventListener('input', e => {
+  const i = e.target.dataset.rule; if (i == null) return;
+  rules[i][2] = parseFloat(e.target.value) || 0; store.set('pct.rules', rules); renderCheck();
+});
+$('resetRules').onclick = () => { rules = clone(DEFAULT_RULES); store.set('pct.rules', rules); renderSettings(); renderCheck(); };
+
+/* ---------- pole top conversion chart ---------- */
+const decFt = v => +(v / 12).toFixed(2) + ' ft';
+const depthOf = ftIn => Math.round(ftIn * 0.1 + 24);   // inches: 10% of length + 2 ft, rounded to the nearest whole inch
+const chartFI = v => fmtFI(v).replace(/' 0"$/, "'").replace("' ", "'");
+function chartCell(v){
+  return `<button class="use" data-ins="${esc(fmtFI(v))}" title="Use in calculator">${chartFI(v)}</button> / <button class="use in" data-ins="${roundIn(v)}&quot;" title="Use in calculator">${fmtIN(v)}</button>`;
+}
+function renderChart(){
+  const hl = Math.round(parseH($('poleLen').value) ?? -1);
+  $('chartBody').innerHTML = [30,35,40,45,50,55,60,65].map(ft => {
+    const L = ft * 12, d = depthOf(L);
+    return `<tr class="${hl === L ? 'hl' : ''}"><td>${ft}'</td><td>${chartCell(d)}</td><td>${chartCell(L - d)}</td></tr>`;
+  }).join('');
+}
+$('poleLen').addEventListener('input', () => {
+  const raw = parseH($('poleLen').value), ok = raw != null && raw > 0, L = ok ? Math.round(raw) : raw;   // whole inches only
+  // every result in ft-in, decimal feet and inches
+  const put = (id, v) => { $(id + '-fi').textContent = ok ? chartFI(v) : '—'; $(id + '-ft').textContent = ok ? decFt(v) : '—'; $(id + '-in').textContent = ok ? fmtIN(v) : '—'; };
+  put('cLen', L); put('cDepth', ok ? depthOf(L) : 0); put('cAbove', ok ? L - depthOf(L) : 0);
+  renderChart();
+});
+function showChart(on){
+  $('chartView').hidden = !on; document.querySelector('main.grid').hidden = on;
+  $('chartTab').setAttribute('aria-pressed', String(on));
+  if (on) renderChart(); else calcIn.focus();
+}
+$('chartTab').onclick = () => showChart($('chartView').hidden);
+$('chartBack').onclick = () => showChart(false);
+$('chartBody').addEventListener('click', e => {
+  const ins = e.target.closest('.use')?.dataset.ins; if (!ins) return;
+  calcIn.value = /[+\-−×÷*\/]\s*$/.test(calcIn.value) ? calcIn.value.replace(/\s*$/, ' ') + ins : ins;
+  showChart(false); runCalc();
+});
+
+/* ---------- theme ---------- */
+const isDark = () => document.documentElement.dataset.theme
+  ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(t){
+  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  $('themeBtn').innerHTML = icon(isDark() ? 'sun' : 'moon');
+}
+applyTheme(store.get('pct.theme', null));
+$('themeBtn').onclick = () => { const t = isDark() ? 'light' : 'dark'; applyTheme(t); store.set('pct.theme', t); };
+
+/* ---------- undo / redo / reset all ---------- */
+// snapshots of everything on screen; kept on this PC so they survive closing the app
+const UNDO_MAX = 40;
+let undoStack = store.get('pct.undo', []), redoStack = [];
+const snap = () => clone({ state, hist, gapReq, calcReq, calc: lastCalc, activeId });
+function pushUndo(){
+  undoStack.push(snap()); if (undoStack.length > UNDO_MAX) undoStack.shift();
+  redoStack = []; editing = false; persistUndo();
+}
+// typing: one undo step per burst of edits (a 1 second pause starts a new step)
+let editing = false, editTimer = null;
+function beginEdit(){
+  if (!editing) { pushUndo(); editing = true; }
+  clearTimeout(editTimer); editTimer = setTimeout(() => { editing = false; }, 1000);
+}
+function persistUndo(){
+  store.set('pct.undo', undoStack);
+  $('undoBtn').disabled = !undoStack.length; $('redoBtn').disabled = !redoStack.length;
+}
+function restore(x){
+  state = x.state; hist = x.hist; gapReq = x.gapReq || {}; calcReq = x.calcReq || ''; calcIn.value = x.calc || '';
+  if (x.activeId && presets.some(p => p.id === x.activeId)) activeId = x.activeId;
+  state.rows.forEach(r => { uid = Math.max(uid, r.id + 1); });
+  save(); saveHist(); renderTable(); renderHist(); renderTabs(); renderReqSel(); renderCheck(); runCalc();
+}
+function undo(){
+  if (!undoStack.length) return;
+  redoStack.push(snap()); restore(undoStack.pop()); editing = false; persistUndo(); hideToast();
+  if (!isTextEntry(document.activeElement)) focusCalc();
+}
+function redo(){
+  if (!redoStack.length) return;
+  undoStack.push(snap()); restore(redoStack.pop()); editing = false; persistUndo();
+}
+$('undoBtn').onclick = undo; $('redoBtn').onclick = redo;
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey)) return;
+  // Ctrl+Z / Ctrl+Y are app-wide: every entry, deletion, New pole and Reset all
+  // (only the Settings dialog keeps the text box's own undo)
+  const k = e.key.toLowerCase();
+  if (k === 'r' && !e.shiftKey) e.preventDefault();            // never reload the app by accident
+  if (anyDialogOpen() || e.altKey) return;
+  if (k === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+  else if (k === 'r' || k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); redo(); }   // Ctrl+R = redo (instead of reload)
+}, true);
+$('resetAll').onclick = () => {
+  pushUndo();
+  state = { poleId:'', poleTop:'', constr:state.constr || 'tangent', rows: defaultRows() };
+  hist = []; gapReq = {}; calcReq = ''; calcIn.value = '';
+  save(); saveHist(); renderTable(); renderHist(); renderReqSel(); renderCheck(); runCalc();
+  toast('Everything cleared');
+};
+let toastTimer = null;
+function toast(msg){
+  $('toastMsg').textContent = msg; $('toast').hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 8000);
+}
+function hideToast(){ $('toast').hidden = true; }
+$('toastUndo').onclick = undo;
+
+if (poleIsBlank()) { state.rows = defaultRows(); save(); }
+renderTable(); renderHist(); refreshAll(); persistUndo();
+// loading-screen sound effects, made on the fly (no sound files); silently skipped if Windows blocks audio
+const sfxCtx = (() => { try { return new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } })();
+function playSfx(build){
+  const C = sfxCtx; if (!C) return;
+  try { C.state === 'suspended' ? C.resume().then(() => build(C, C.currentTime), () => {}) : build(C, C.currentTime); } catch (e) {}
+}
+const noiseBuf = (C, secs, decay) => {
+  const len = Math.floor(C.sampleRate * secs), b = C.createBuffer(1, len, C.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+  const n = C.createBufferSource(); n.buffer = b; return n;
+};
+const env = (C, t, peak, dur) => { const g = C.createGain(); g.gain.setValueAtTime(peak, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur); return g; };
+const SFX = {
+  // bird hit: wet splat
+  splat: (C, t) => {
+    const n = noiseBuf(C, 0.4, 3), f = C.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = 6;
+    f.frequency.setValueAtTime(3000, t); f.frequency.exponentialRampToValueAtTime(150, t + 0.32);
+    n.connect(f).connect(env(C, t, 1, 0.4)).connect(C.destination); n.start(t);
+    const o = C.createOscillator(); o.frequency.setValueAtTime(180, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.2);
+    o.connect(env(C, t, 0.9, 0.22)).connect(C.destination); o.start(t); o.stop(t + 0.25);
+  },
+  // acorn on a hard hat: hollow "tok"
+  tok: (C, t) => {
+    [0, 0.09].forEach((dt, i) => {
+      const o = C.createOscillator(); o.type = 'triangle';
+      o.frequency.setValueAtTime(i ? 720 : 950, t + dt); o.frequency.exponentialRampToValueAtTime(i ? 380 : 420, t + dt + 0.08);
+      o.connect(env(C, t + dt, i ? 0.45 : 0.9, 0.12)).connect(C.destination); o.start(t + dt); o.stop(t + dt + 0.14);
+    });
+    const n = noiseBuf(C, 0.03, 2), hp = C.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2500;
+    n.connect(hp).connect(env(C, t, 0.6, 0.03)).connect(C.destination); n.start(t);
+  },
+  // electrocution: buzzing hum with crackle
+  zap: (C, t) => {
+    const o = C.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(110, t);
+    const lfo = C.createOscillator(); lfo.type = 'square'; lfo.frequency.value = 28;
+    const lg = C.createGain(); lg.gain.value = 0.35; lfo.connect(lg);
+    const g = C.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.02);
+    g.gain.setValueAtTime(0.5, t + 0.5); g.gain.exponentialRampToValueAtTime(0.001, t + 0.62); lg.connect(g.gain);
+    o.connect(g).connect(C.destination); o.start(t); lfo.start(t); o.stop(t + 0.65); lfo.stop(t + 0.65);
+    const n = noiseBuf(C, 0.6, 0.6), bp = C.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3200; bp.Q.value = 0.8;
+    n.connect(bp).connect(env(C, t, 0.5, 0.6)).connect(C.destination); n.start(t);
+  },
+  // made it to the top: two-note ding
+  ding: (C, t) => {
+    [[880, 0], [1318.5, 0.13]].forEach(([fr, dt]) => {
+      const o = C.createOscillator(); o.frequency.value = fr;
+      o.connect(env(C, t + dt, 0.5, 0.5)).connect(C.destination); o.start(t + dt); o.stop(t + dt + 0.55);
+    });
+  },
+};
+// loading screen: a random ending each launch (~2.5-3.3 s); click or any key skips it
+{
+  const sp = $('splash'), v = window.SPLASH || 'bird', still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const plan = { climb: ['ding', 1880, 2700], bird: ['splat', 2020, 3300], zap: ['zap', 1900, 3500], nut: ['tok', 2010, 3300] }[v];
+  const hide = () => { if (sp.classList.contains('done')) return; sp.classList.add('done'); setTimeout(() => { sp.remove(); focusCalc(); }, 500); };
+  const t = setTimeout(hide, still ? 300 : plan[2]);
+  const st = still ? 0 : setTimeout(() => playSfx(SFX[plan[0]]), plan[1]);
+  sp.addEventListener('click', () => { clearTimeout(t); clearTimeout(st); hide(); });
+  document.addEventListener('keydown', function skip(e){ if (!document.body.contains(sp)) return document.removeEventListener('keydown', skip, true);
+    clearTimeout(t); clearTimeout(st); hide(); e.preventDefault(); e.stopPropagation(); }, true);
+}
+})();
+</script>
+</body>
+</html>

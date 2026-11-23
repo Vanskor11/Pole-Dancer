@@ -1,0 +1,7 @@
+# built by web/build.py on every deploy
+web/public/
+.vercel/
+# local-only files
+ui-variants/
+*.lnk
+*.zip

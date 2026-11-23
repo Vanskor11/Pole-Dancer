@@ -1,0 +1,10 @@
+{
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "python3 web/build.py",
+  "outputDirectory": "web/public",
+  "cleanUrls": true,
+  "headers": [
+    { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+  ]
+}
