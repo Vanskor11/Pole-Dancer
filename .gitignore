@@ -5,3 +5,6 @@ web/public/
 ui-variants/
 *.lnk
 *.zip
+
+.vercel
+.env*
